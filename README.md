@@ -1,3 +1,5 @@
+
+
 Migrate DB:
 docker-compose run web python manage.py migrate
 
@@ -13,4 +15,6 @@ Static: https://docs.djangoproject.com/en/1.10/howto/static-files/
 Auth: https://docs.djangoproject.com/en/1.10/topics/auth/default/
 https://docs.djangoproject.com/en/1.10/topics/auth/customizing/
 
-https://hackernoon.com/creating-websites-using-react-and-django-rest-framework-b14c066087c7
+React:
+http://v1k45.com/blog/modern-django-part-1-setting-up-django-and-react/
+http://v1k45.com/blog/modern-django-part-2-redux-and-react-router-setup/

@@ -1,2 +1,4 @@
-Django==2.0.3
-psycopg2
+Django
+psycopg2-binary
+django-webpack-loader
+djangorestframework
