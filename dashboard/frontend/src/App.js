@@ -9,10 +9,10 @@ import NotFound from "./components/NotFound";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 
-import ponyApp from "./reducers";
+import dashboardApp from "./reducers";
 import thunk from "redux-thunk";
 
-let store = createStore(ponyApp, applyMiddleware(thunk));
+let store = createStore(dashboardApp, applyMiddleware(thunk));
 
 class App extends Component {
   render() {

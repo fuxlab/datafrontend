@@ -2,6 +2,16 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {notes} from "../actions";
 
+
+import {
+    Icon,
+    Button,
+    InputGroup,
+} from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+
+import Menu from "./Menu";
+
 class Note extends Component {
 
   state = {
@@ -34,20 +44,24 @@ class Note extends Component {
   render() {
     return (
       <div>
-        <h2>Datafrontend.Dashboard</h2>
-        
+        <Menu />
+
+        <h2><Icon icon="document" /> Notes</h2>
         <hr />
-        <h3>Add new note</h3>
-        <form onSubmit={this.submitNote}>
-          <input
-            value={this.state.text}
-            placeholder="Enter note here..."
-            onChange={(e) => this.setState({text: e.target.value})}
-            required />
-          <button onClick={this.resetForm}>Reset</button>
-          <input type="submit" value="Save Note" />
-        </form>
         
+        <h3>Add new note</h3>
+        
+        <form onSubmit={this.submitNote}>
+          <InputGroup
+              large="true"
+              value={this.state.text}
+              placeholder="Enter note here..."
+              onChange={(e) => this.setState({text: e.target.value})}
+              required            
+          />
+          <Button icon="cross" onClick={this.resetForm} text="Cancel" />
+          <Button type="submit" icon="floppy-disk" text="Save Note" />
+        </form>
         
         <h3>Notes</h3>
         <table>
