@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import {notes} from "../actions";
 
-
 import {
     Icon,
     Button,
@@ -60,18 +59,20 @@ class Note extends Component {
               required            
           />
           <Button icon="cross" onClick={this.resetForm} text="Cancel" />
-          <Button type="submit" icon="floppy-disk" text="Save Note" />
+          <Button type="submit" intent="success" icon="floppy-disk" text="Save Note" />
         </form>
         
         <h3>Notes</h3>
-        <table>
+        <table class="bp3-html-table bp3-html-table-bordered bp3-interactive" width="100%">
           <tbody>
             {this.props.notes.map((note, id) => (
               <tr key={`note_${id}`}>
                 <td>{note.id}</td>
                 <td>{note.text}</td>
-                <td><button onClick={() => this.selectForEdit(id)}>edit</button></td>
-                <td><button onClick={() => this.props.deleteNote(id)}>delete</button></td>
+                <td>
+                  <button onClick={() => this.selectForEdit(id)}>edit</button>
+                  <button onClick={() => this.props.deleteNote(id)}>delete</button>
+                </td>
               </tr>
             ))}
           </tbody>

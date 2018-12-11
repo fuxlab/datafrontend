@@ -18,3 +18,4 @@ https://docs.djangoproject.com/en/1.10/topics/auth/customizing/
 React:
 http://v1k45.com/blog/modern-django-part-1-setting-up-django-and-react/
 http://v1k45.com/blog/modern-django-part-2-redux-and-react-router-setup/
+http://v1k45.com/blog/modern-django-part-3-creating-an-api-and-integrating-with-react/

@@ -2,3 +2,6 @@ Django
 psycopg2-binary
 django-webpack-loader
 djangorestframework
+scrapy
+requests
+google-cloud-bigquery
