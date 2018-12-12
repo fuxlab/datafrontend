@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import notes from "./notes";
 
-const ponyApp = combineReducers({
+const dashboardApp = combineReducers({
   notes,
 })
 
-export default ponyApp;
+export default dashboardApp;

@@ -19,8 +19,9 @@ class Menu extends React.Component {
         <Navbar.Group align={Alignment.LEFT}>
           <Navbar.Heading>datafrontend</Navbar.Heading>
           <Navbar.Divider />
-          <Button className="bp3-minimal" icon="home" text="Home" />
-          <Button className="bp3-minimal" icon="document" text="Notes" />
+          <Button className="bp3-minimal" icon="home" text="Home" href="/" />
+          <Button className="bp3-minimal" icon="document" text="Notes" href="/notes" />
+          <Button className="bp3-minimal" icon="box" text="Projects" />
         </Navbar.Group>
       </Navbar>
     )

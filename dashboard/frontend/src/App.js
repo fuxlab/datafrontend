@@ -3,6 +3,8 @@ import logo from './logo.svg';
 import './App.css';
 
 import {Route, Switch, BrowserRouter} from 'react-router-dom';
+
+import Dashboard from "./components/Dashboard";
 import Note from "./components/Note";
 import NotFound from "./components/NotFound";
 
@@ -20,7 +22,8 @@ class App extends Component {
       <Provider store={store}>
         <BrowserRouter>
           <Switch>
-            <Route exact path="/" component={Note} />
+            <Route exact path="/" component={Dashboard} />
+            <Route exact path="/notes" component={Note} />
             <Route component={NotFound} />
           </Switch>
         </BrowserRouter>
