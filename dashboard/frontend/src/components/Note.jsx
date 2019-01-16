@@ -7,9 +7,9 @@ import {
     Button,
     InputGroup,
 } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
 
-import Menu from "./Menu";
+import Menu from "./base/Menu";
+import EditWindow from "./base/EditWindow";
 
 class Note extends Component {
 
@@ -23,12 +23,15 @@ class Note extends Component {
   }
 
   selectForEdit = (id) => {
+    this.refs.EditNoteWindow.setState({ isOpen: true});
     let note = this.props.notes[id];
     this.setState({text: note.text, updateNoteId: id});
   }
 
   submitNote = (e) => {
-    e.preventDefault();
+    if(e) {
+      e.preventDefault();
+    }
     if (this.state.updateNoteId === null) {
       this.props.addNote(this.state.text).then(this.resetForm)
     } else {
@@ -36,6 +39,10 @@ class Note extends Component {
     }
   }
   
+  toggleEditForm(){
+    this.refs.EditNoteWindow.setState({ isOpen: true});
+  }
+
   componentDidMount() {
     this.props.fetchNotes();
   }
@@ -44,26 +51,25 @@ class Note extends Component {
     return (
       <div>
         <Menu />
+        <Button icon="add" text="Show" onClick={() => this.toggleEditForm()} />
 
         <h2><Icon icon="document" /> Notes</h2>
         <hr />
-        
-        <h3>Add new note</h3>
-        
-        <form onSubmit={this.submitNote}>
-          <InputGroup
-              large="true"
-              value={this.state.text}
-              placeholder="Enter note here..."
-              onChange={(e) => this.setState({text: e.target.value})}
-              required            
-          />
-          <Button icon="cross" onClick={this.resetForm} text="Cancel" />
-          <Button type="submit" intent="success" icon="floppy-disk" text="Save Note" />
-        </form>
+        <EditWindow title="Edit Note" ref="EditNoteWindow" icon="box" submitMethod={this.submitNote}>
+          <form ref="form" onSubmit={this.submitNote}>
+            <InputGroup
+                large="true"
+                value={this.state.text}
+                placeholder="Enter note here..."
+                onChange={(e) => this.setState({text: e.target.value})}
+                required            
+            />
+          </form>
+        </EditWindow>
         
         <h3>Notes</h3>
-        <table class="bp3-html-table bp3-html-table-bordered bp3-interactive" width="100%">
+
+        <table className="bp3-html-table bp3-html-table-bordered bp3-interactive" width="100%">
           <tbody>
             {this.props.notes.map((note, id) => (
               <tr key={`note_${id}`}>

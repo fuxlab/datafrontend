@@ -1,4 +1,4 @@
-export const fetchprojects = () => {
+export const fetchProjects = () => {
   return dispatch => {
     let headers = {"Content-Type": "application/json"};
     return fetch("/api/projects/", {headers, })
@@ -12,10 +12,10 @@ export const fetchprojects = () => {
   }
 }
 
-export const addProject = text => {
+export const addProject = name => {
   return dispatch => {
     let headers = {"Content-Type": "application/json"};
-    let body = JSON.stringify({text, });
+    let body = JSON.stringify({name, });
     return fetch("/api/projects/", {headers, method: "POST", body})
       .then(res => res.json())
       .then(project => {
@@ -27,11 +27,11 @@ export const addProject = text => {
   }
 }
 
-export const updateProject = (index, text) => {
+export const updateProject = (index, name) => {
   return (dispatch, getState) => {
 
     let headers = {"Content-Type": "application/json"};
-    let body = JSON.stringify({text, });
+    let body = JSON.stringify({name, });
     let projectId = getState().projects[index].id;
 
     return fetch(`/api/projects/${projectId}/`, {headers, method: "PUT", body})

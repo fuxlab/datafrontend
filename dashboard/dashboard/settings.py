@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'notes.apps.NotesConfig',
     'projects.apps.ProjectsConfig',
+    'datasets.apps.DatasetsConfig',
 ]
 
 MIDDLEWARE = [

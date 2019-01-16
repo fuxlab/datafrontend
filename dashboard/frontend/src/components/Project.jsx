@@ -1,108 +1,114 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
-import {notes} from "../actions";
+import {projects} from "../actions";
 
 import {
-    Icon,
-    Button,
     InputGroup,
 } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
 
-import Menu from "./Menu";
+import Layout from "./Layout";
+import StarterCard from "./base/StarterCard";
+import EditWindow from "./base/EditWindow";
+import OverviewTable from "./base/OverviewTable";
 
-class Note extends Component {
+class Project extends Component {
 
   state = {
-    text: "",
-    updateNoteId: null,
+    name: "",
+    updateProjectId: null,
+    isOpen: false,
   }
 
   resetForm = () => {
-    this.setState({text: "", updateNoteId: null});
+    this.setState({
+      name: "",
+      updateProjectId: null
+    });
   }
 
-  selectForEdit = (id) => {
-    let note = this.props.notes[id];
-    this.setState({text: note.text, updateNoteId: id});
+  selectProject = (index) => {
+    // TODO: replace this (and all document.locations) when changing routing
+    var id = this.props.projects[index].id
+    document.location = '/datasets/'+id;
+    return;
+  }  
+
+  selectForEdit = (index) => {
+    this.refs.EditProjectWindow.setState({ isOpen: true});
+    let project = this.props.projects[index];
+
+    this.setState({
+      name: project.name,
+      updateProjectId: index
+    });
   }
 
-  submitNote = (e) => {
-    e.preventDefault();
-    if (this.state.updateNoteId === null) {
-      this.props.addNote(this.state.text).then(this.resetForm)
+  submitProject = (e) => {
+    if(e){
+      e.preventDefault();
+    }
+    if (this.state.updateProjectId === null) {
+      this.props.addProject(this.state.name).then(this.resetForm)
+      this.refs.EditProjectWindow.setState({ isOpen: false});
     } else {
-      this.props.updateNote(this.state.updateNoteId, this.state.text);
+      this.props.updateProject(this.state.updateProjectId, this.state.name);
     }
   }
   
-  componentDidMount() {
-    this.props.fetchNotes();
+  actionAddProject = () => {
+    this.refs.EditProjectWindow.setState({ isOpen: true});
+    this.resetForm();
   }
 
   render() {
+    var starter_actions = [
+      { 'icon': 'add', 'text': 'Add Project', 'action': this.actionAddProject }
+    ]
+    var overview_actions = [
+      { 'icon': 'play', 'action': this.selectProject },
+      { 'icon': 'edit', 'action': this.selectForEdit },
+      { 'icon': 'trash', 'action': (e) => this.props.deleteProject(e) },
+    ]
     return (
-      <div>
-        <Menu />
+      <Layout>
+        <StarterCard header="Projects" actions={starter_actions}>
+          <OverviewTable data={this.props.projects} columns={['id', 'name']} actions={overview_actions}></OverviewTable>
+        </StarterCard>
 
-        <h2><Icon icon="document" /> Notes</h2>
-        <hr />
-        
-        <h3>Add new note</h3>
-        
-        <form onSubmit={this.submitNote}>
-          <InputGroup
-              large="true"
-              value={this.state.text}
-              placeholder="Enter note here..."
-              onChange={(e) => this.setState({text: e.target.value})}
-              required            
-          />
-          <Button icon="cross" onClick={this.resetForm} text="Cancel" />
-          <Button type="submit" intent="success" icon="floppy-disk" text="Save Note" />
-        </form>
-        
-        <h3>Notes</h3>
-        <table class="bp3-html-table bp3-html-table-bordered bp3-interactive" width="100%">
-          <tbody>
-            {this.props.notes.map((note, id) => (
-              <tr key={`note_${id}`}>
-                <td>{note.id}</td>
-                <td>{note.text}</td>
-                <td>
-                  <button onClick={() => this.selectForEdit(id)}>edit</button>
-                  <button onClick={() => this.props.deleteNote(id)}>delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <EditWindow title="Edit Project" ref="EditProjectWindow" icon="box" submitMethod={this.submitProject}>
+          <form ref="form" onSubmit={this.submitProject}>
+            <InputGroup
+                large="true"
+                value={this.state.name}
+                placeholder="Enter note here..."
+                onChange={(e) => this.setState({name: e.target.value})}
+                required            
+            />
+          </form>
+        </EditWindow>
+      </Layout>
     )
   }
 }
 
 const mapStateToProps = state => {
   return {
-    notes: state.notes,
+    projects: state.projects,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    deleteNote: (id) => {
-      dispatch(notes.deleteNote(id));
+    deleteProject: (id) => {
+      dispatch(projects.deleteProject(id));
     },
-    fetchNotes: () => {
-      dispatch(notes.fetchNotes());
+    addProject: (name) => {
+      return dispatch(projects.addProject(name));
     },
-    addNote: (text) => {
-      return dispatch(notes.addNote(text));
-    },
-    updateNote: (id, text) => {
-      return dispatch(notes.updateNote(id, text));
+    updateProject: (id, name) => {
+      return dispatch(projects.updateProject(id, name));
     }
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Note);
+export default connect(mapStateToProps, mapDispatchToProps)(Project);

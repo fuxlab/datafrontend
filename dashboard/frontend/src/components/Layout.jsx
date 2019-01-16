@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import { IconNames } from "@blueprintjs/icons";
-
 import Menu from "./base/Menu";
-import StarterCard from "./base/StarterCard";
 
 import { projects } from "../actions";
 
-class Dashboard extends Component {
-  
+class Layout extends Component {
   componentDidMount() {
-    console.log('test');
     this.props.fetchProjects();
-    console.log(this.props.projects);
   }
 
   render() {
     return (
-      <div>
+      <div className={this.props.className}>
         <Menu projects={this.props.projects}/>
-        <StarterCard header="Dashboard">
-          Something to do.
-        </StarterCard>        
+        {this.props.children}
       </div>
     )
   }
@@ -42,4 +34,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(Layout);
