@@ -12,15 +12,26 @@ class DatasetTree extends Component {
     selectedProjectName: 'Projects',
   }
 
-  componentDidMount() {
-    this.props.fetchDatasets();
-  }
+  // componentDidMount() {
+  //   this.props.fetchDatasets();
+  // }
 
   items(){
     return(this.props.datasets);
   }
 
   nodes(){
+    var nodes = [];
+    for(var i=0;i<this.items().length;i++) {
+      nodes.push({
+        id: this.items()[i].id,
+        hasCaret: true,
+        icon: "folder-close",
+        label: this.items()[i].name,
+      })
+    }
+    return nodes;
+    
     return [
         {
             id: 0,
@@ -108,5 +119,5 @@ const mapDispatchToProps = dispatch => {
     }
   }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(DatasetTree);
+export default (DatasetTree);
+// export default connect(mapStateToProps, mapDispatchToProps)(DatasetTree);

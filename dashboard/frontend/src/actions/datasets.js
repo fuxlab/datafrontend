@@ -15,7 +15,7 @@ export const fetchDatasets = () => {
 export const fetchDataset = (id) => {
   return dispatch => {
     let headers = {"Content-Type": "application/json"};
-    return fetch("/api/datasets/"+id, {headers, })
+    return fetch(`/api/datasets/${id}/`, {headers, })
       .then(res => res.json())
       .then(dataset => {
         return dispatch({

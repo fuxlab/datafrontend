@@ -32,11 +32,8 @@ class EditWindow extends Component {
   }
 
   render() {
-    if(this.props.isOpen) {
-      this.setState('isOpen', this.props.isOpen);
-    }
     return (
-      <Dialog icon={this.props.icon} title={this.props.title} isOpen={this.state.isOpen} onClose={() => this.setState({isOpen: false})}>
+      <Dialog ref="EditWindow" icon={this.props.icon} title={this.props.title} isOpen={this.state.isOpen} onClose={() => this.setState({isOpen: false})}>
         <div className="bp3-dialog-body">
           {this.props.children}
         </div>

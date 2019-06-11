@@ -1,31 +1,43 @@
-const initialState = [];
+const initialState = {
+  'all': [],
+  'one': {}
+};
 
-// could be replaced to { type, payload }
 export default function datasets(state=initialState, action) {
-  let datasetList = state.slice();
-
   switch (action.type) {
 
     case 'ADD_DATASET':
       return [...state, action.dataset];
 
-    case 'FETCH_DATASETS':
-      return [...state, ...action.datasets];
-
     case 'FETCH_DATASET':
-      return [...state, ...action.datasets];
+      state.one = {
+        'id': action.dataset.id,
+        'name': action.dataset.name,
+        'identifier': action.dataset.identifier,
+      }
+      return state;
 
     case 'UPDATE_DATASET':
-      let datasetToUpdate = datasetList[action.id]
+      let indexToUpdate = state.all.findIndex(dataset => (dataset.id === action.id));
+      console.log(indexToUpdate);
+      let datasetToUpdate = state['all'][indexToUpdate]
+      
       datasetToUpdate.project_id = action.dataset.project_id;
       datasetToUpdate.name = action.dataset.name;
       datasetToUpdate.identifier = action.dataset.identifier;
-      datasetList.splice(action.id, 1, datasetToUpdate);
-      return datasetList;
+
+      state['all'].splice(indexToUpdate, 1, datasetToUpdate);
+      console.log(state);
+      return state;
+      
 
     case 'DELETE_DATASET':
-      datasetList.splice(action.id, 1);
-      return datasetList;
+      //datasetList.splice(action.id, 1);
+      return state;
+
+    case 'FETCH_DATASETS':
+      state.all = action.datasets;
+      return state;
 
     default:
       return state;

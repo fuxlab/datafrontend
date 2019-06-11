@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 
-import Menu from "./base/Menu";
+import Menu from "./Menu";
 
-import { projects } from "../actions";
+import { projects } from "./../../actions";
 
 class Layout extends Component {
   componentDidMount() {

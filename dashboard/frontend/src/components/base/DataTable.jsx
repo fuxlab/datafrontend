@@ -5,13 +5,6 @@ import { Cell, Column, Table, Utils, SelectionModes, IMenuContext, CopyCellsMenu
 
 class DataTable extends React.Component {
 
-  submit(e){
-    if(this.props.submitMethod){
-      this.props.submitMethod();
-      this.setState({isOpen: false});
-    }
-  }
-
   renderBodyContextMenu(context: IMenuContext){
     return (
       <Menu>

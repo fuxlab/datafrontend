@@ -4,7 +4,7 @@ import { Button, ButtonGroup, HTMLTable } from "@blueprintjs/core";
 
 class OverviewTable extends Component {
 
-  rowActions(index){
+  rowActions(id){
     if(!this.props.actions || this.props.actions.length === 0) {
       return;
     }
@@ -15,14 +15,14 @@ class OverviewTable extends Component {
       var action_text = this.props.actions[i]['text'];
 
       actions.push(
-        <Button icon={action_icon} key={ 'button_' + index + '_' + i } onClick={ this.props.actions[i]['action'].bind(this, index) }>
+        <Button icon={action_icon} key={ 'button_' + id + '_' + i } onClick={ this.props.actions[i]['action'].bind(this, id) }>
           { action_text }
         </Button>
       );
     }
 
     return (
-      <td key={'cell_' + index}>
+      <td key={'cell_' + id}>
         <ButtonGroup>
         {actions}
         </ButtonGroup>
@@ -67,7 +67,7 @@ class OverviewTable extends Component {
         );
       }
       
-      columns.push(this.rowActions(i));
+      columns.push(this.rowActions(row_id));
 
       rows.push(
         <tr key={ 'tr_' + i }>{columns}</tr>

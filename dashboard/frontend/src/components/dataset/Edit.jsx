@@ -10,87 +10,57 @@ import {
     Dialog
 } from "@blueprintjs/core";
 
-import EditWindow from "./../base/EditWindow";
-
 class DatasetEdit extends Component {
-  
-  state = {
-    dataset: {},
-    isOpen: false,
+
+  submit(){
+    this.props.submitMethod();
   }
 
-  submitDataset = (e) => {
-    if(e){
-      e.preventDefault();
-    }
-    if (this.state.updateDatasetId === null) {
-      this.props.addDataset(this.state.data).then(this.resetForm)
-      this.refs.EditDatasetWindow.setState({ isOpen: false});
-    } else {
-      this.props.updateDataset(this.state.updateDatasetId, this.state.data);
-    }
+  close(){
+    this.props.closeMethod();
   }
 
-  edit(id){
-    console.log('edit');
-    this.setState('isOpen', true);
-  }
-
-  create(){
-    console.log('create');
-    this.setState('isOpen', true);
+  change(id){
+    this.props.changeMethod(id);
   }
 
   render() {
     return(
-      <EditWindow title="Edit Project" isOpen={this.state.isOpen} ref="EditProjectWindow" icon="box" submitMethod={this.submitProject}>
-        <form ref="form" onSubmit={this.submitDataset}>
+      <Dialog ref="DatasetEditWindow" icon="" title={this.props.title} isOpen={this.props.isOpen} onClose={() => this.close() }>
+        <div className="bp3-dialog-body">
+        <form ref="form" onSubmit={() => this.submit()}>
           <InputGroup
+            name="project_id"
             large="true"
-            value={this.state.dataset.project_id}
+            value={this.props.dataset.project_id}
+            onChange={(e) => this.change(e) }
             placeholder="project_id"
             required
           />
           <InputGroup
+            name="identifier"
             large="true"
-            value={this.state.dataset.identifier}
+            value={this.props.dataset.identifier}
             placeholder="Enter identifier here..."
-            onChange={(e) => this.setState({data: Object.assign(this.state.dataset, { 'identifier': e.target.value })})}
+            onChange={(e) => this.change(e) }
             required
           />
           <InputGroup
+            name="name"
             large="true"
-            value={this.state.dataset.name}
+            value={this.props.dataset.name}
             placeholder="Enter name here..."
-            onChange={(e) => this.setState({data: Object.assign(this.state.dataset, { 'name': e.target.value })})}
+            onChange={(e) => this.change(e) }
             required
           />
         </form>
-      </EditWindow>
+        </div>
+        <div className="bp3-dialog-footer">
+          <Button type="submit" onClick={() => this.submit()} intent="success" icon="floppy-disk" text="Save" />
+        </div>
+      </Dialog>
     );
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    isOpen: state.isOpen,
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchDataset: (id) => {
-      console.log('fetch');
-      dispatch(datasets.fetchDataset(id));
-    },
-    addDataset: (data) => {
-      console.log('add');
-      return dispatch(datasets.addDataset(data));
-    },
-    updateDataset: (id, data) => {
-      return dispatch(datasets.updateDataset(id, data));
-    },
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(DatasetEdit);
+export default (DatasetEdit);

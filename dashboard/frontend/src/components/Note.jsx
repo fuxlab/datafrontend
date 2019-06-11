@@ -8,6 +8,7 @@ import {
     InputGroup,
 } from "@blueprintjs/core";
 
+import Layout from "./base/Layout";
 import Menu from "./base/Menu";
 import EditWindow from "./base/EditWindow";
 

@@ -32,7 +32,7 @@
   justify-content: flex-start;
 }
 
-.datasets .menu {
+.datasets .sidebar {
   display: flex;
   width: 20%;
   float: left;

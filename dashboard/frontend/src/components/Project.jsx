@@ -6,7 +6,7 @@ import {
     InputGroup,
 } from "@blueprintjs/core";
 
-import Layout from "./Layout";
+import Layout from "./base/Layout";
 import StarterCard from "./base/StarterCard";
 import EditWindow from "./base/EditWindow";
 import OverviewTable from "./base/OverviewTable";
