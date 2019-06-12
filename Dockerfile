@@ -1,10 +1,10 @@
-FROM python:3.6.4
+FROM python:3.7.3
 
 RUN apt-get update
 RUN apt-get install pylint curl --assume-yes
+RUN apt-get install libpq-dev --assume-yes
 
 ENV PYTHONUNBUFFERED 1
-
 
 # install node js
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -

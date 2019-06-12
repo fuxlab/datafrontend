@@ -1,4 +1,5 @@
 cd /app/frontend
+npm install & 
 npm run start &
 
 cd /app

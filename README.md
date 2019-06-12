@@ -1,13 +1,13 @@
 
 
 Migrate DB:
-docker-compose run web python manage.py migrate
+docker-compose run datafrontend python manage.py migrate
 
 Make Migration:
-docker-compose run web python manage.py makemigrations results
+docker-compose run datafrontend python manage.py makemigrations results
 
 Run Tests:
-docker-compose run web python manage.py test
+docker-compose run datafrontend python manage.py test
 
 Docs:
 Tuto: https://docs.djangoproject.com/en/1.10/intro/tutorial03/
