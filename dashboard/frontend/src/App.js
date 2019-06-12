@@ -1,43 +1,22 @@
-import React, { Component } from 'react';
-import './App.css';
+// in src/App.js
+import React from 'react';
 
-import {Route, Switch, BrowserRouter} from 'react-router-dom';
+// styling
+import DefaultLayout from './components/default_layout';
+import PostIcon from '@material-ui/icons/Book';
 
-import Dashboard from "./components/Dashboard";
-import Note from "./components/Note";
-import Project from "./components/Project";
-import Dataset from "./components/Dataset";
-import NotFound from "./components/NotFound";
+import { Admin, Resource } from 'react-admin';
 
-import { Provider } from "react-redux";
-import { createStore, applyMiddleware, compose } from "redux";
+import { DatasetList } from './components/datasets';
+import Dashboard from './components/dashboard';
+import authProvider from './components/auth_provider';
 
-import dashboardAppReducers from "./reducers";
-import thunk from "redux-thunk";
+import jsonServerProvider from 'ra-data-json-server';
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-let store = createStore(
-  dashboardAppReducers,
-  composeEnhancer(applyMiddleware(thunk)),
+const dataProvider = jsonServerProvider('http://jsonplaceholder.typicode.com');
+const App = () => (
+    <Admin dashboard={Dashboard} dataProvider={dataProvider} authProvider={authProvider} appLayout={DefaultLayout}>
+        <Resource name="users" list={DatasetList}  icon={PostIcon}/>
+    </Admin>
 );
-
-class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <BrowserRouter>
-          <Switch>
-            <Route exact path="/" component={Dashboard} />
-            <Route exact path="/notes" component={Note} />
-            <Route exact path="/projects" component={Project} />
-            <Route exact path="/datasets/:id" component={Dataset} />
-            <Route component={NotFound} />
-          </Switch>
-        </BrowserRouter>
-      </Provider>
-    );
-  }
-}
-
 export default App;
