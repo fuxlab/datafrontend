@@ -4,6 +4,8 @@ import { List, Datagrid, TextField, UrlField, EditButton } from 'react-admin';
 import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 
+import ImageGrid from './../components/image_grid';
+
 const ImageFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />
@@ -13,14 +15,20 @@ const ImageFilter = (props) => (
     </Filter>
 );
 
+// export const ImageList = props => (
+//    <List filters={<ImageFilter />} {...props}>
+//        <Datagrid rowClick="edit">
+//            <TextField source="id" />
+//            <TextField source="name" />
+//            <UrlField source="url" />
+//            <EditButton />
+//        </Datagrid>
+//    </List>
+//);
+
 export const ImageList = props => (
     <List filters={<ImageFilter />} {...props}>
-        <Datagrid rowClick="edit">
-            <TextField source="id" />
-            <TextField source="name" />
-            <UrlField source="url" />
-            <EditButton />
-        </Datagrid>
+        <ImageGrid />
     </List>
 );
 
