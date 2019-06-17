@@ -10,9 +10,8 @@ ENV PYTHONUNBUFFERED 1
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y nodejs
 
-RUN npm install -g create-react-app
-RUN npm install webpack-bundle-tracker
-RUN npm install -g react-router-dom
+# install yarn
+RUN npm install -g yarn
 
 RUN mkdir /app
 WORKDIR /app
