@@ -7,7 +7,7 @@ export default () => (
     <Card>
         <CardHeader title="Welcome to DataFrontend" />
         <CardContent>
-            How can we help you today?
+            How can we help you today? Not
         </CardContent>
     </Card>
 );

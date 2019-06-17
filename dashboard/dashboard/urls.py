@@ -20,9 +20,11 @@ from django.contrib import admin
 from django.views.generic import TemplateView
 from projects import endpoints as projects_endpoints
 from datasets import endpoints as datasets_endpoints
+from images import endpoints as images_endpoints
 
 urlpatterns = [
     url(r'^api/', include(projects_endpoints)),
     url(r'^api/', include(datasets_endpoints)),
+    url(r'^api/', include(images_endpoints)),
     path('', TemplateView.as_view(template_name="index.html")),
 ]

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'webpack_loader',
     'projects.apps.ProjectsConfig',
     'datasets.apps.DatasetsConfig',
+    'images.apps.ImagesConfig',
 ]
 
 MIDDLEWARE = [

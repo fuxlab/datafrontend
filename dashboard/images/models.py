@@ -1,10 +1,11 @@
 from django.db import models
 
-class Dataset(models.Model):
+class Image(models.Model):
   
-    project_id = models.IntegerField(null=True)
+    dataset_id = models.IntegerField(null=True)
+    type_id = models.IntegerField(null=True)
 
-    identifier = models.SlugField(null=True)
+    url = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)

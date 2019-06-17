@@ -1,4 +1,5 @@
-
+Create ReactApp:
+docker-compose run datafrontend ./frontend/yarn build
 
 Migrate DB:
 docker-compose run datafrontend python manage.py migrate
@@ -8,6 +9,12 @@ docker-compose run datafrontend python manage.py makemigrations results
 
 Run Tests:
 docker-compose run datafrontend python manage.py test
+
+Recreate JS-Files (and keep watching):
+docker-compose up datafrontend
+docker-compose exec datafrontend bash > cd frontend && yarn build
+
+
 
 Docs:
 Tuto: https://docs.djangoproject.com/en/1.10/intro/tutorial03/

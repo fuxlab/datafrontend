@@ -1,6 +1,5 @@
 cd /app/frontend
 yarn install
-yarn build
 yarn start &
 
 cd /app
