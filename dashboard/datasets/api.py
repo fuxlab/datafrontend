@@ -1,4 +1,3 @@
-# Create your views here.
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
 

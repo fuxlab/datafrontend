@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'webpack_loader',
     'projects.apps.ProjectsConfig',
     'datasets.apps.DatasetsConfig',
+    'categories.apps.CategoriesConfig',
+    'annotations.apps.AnnotationsConfig',
     'images.apps.ImagesConfig',
 ]
 

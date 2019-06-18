@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 
 from datasets.models import Dataset
 
-
 class TestApiDatasets(TestCase):
 
     def setUp(self):

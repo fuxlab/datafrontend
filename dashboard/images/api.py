@@ -1,4 +1,3 @@
-# Create your views here.
 from rest_framework import permissions
 from dashboard.lib.api_base import DashboardApiBase
 from .models import Image
