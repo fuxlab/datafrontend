@@ -3,39 +3,90 @@ from django.test import Client
 from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
-from annotations.models import Annotation
+from categories.models import Category
+from datasets.models import Dataset
+from images.models import Image
+from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
 class TestImages(TestCase):
 
 
     def setUp(self):
         self.client = Client()
-        self.image_id = 1
-        self.category_id = 11
-        self.annotation = Annotation.objects.create(image_id=self.image_id, category_id=self.category_id)
-
+        self.dataset = Dataset.objects.create(name='Test 1')
+        self.category = Category.objects.create(name='Test Category 1', dataset=self.dataset)
+        self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg')
+        self.annotation = Annotation.objects.create(image=self.image, category=self.category)
 
     def create_multi(self):
-        self.annotation2 = Annotation.objects.create(image_id=self.image_id, category_id=11)
-        self.annotation3 = Annotation.objects.create(image_id=2, category_id=22)
-        self.annotation4 = Annotation.objects.create(image_id=2, category_id=22)
+        self.category2 = Category.objects.create(name='Test Category 3', dataset=self.dataset)
+        self.dataset2 = Dataset.objects.create(name='Testdataset 2')
+        self.image_with_dataset2 = Image.objects.create(name='img1', url='http://images.com/img2.jpg', dataset_id=self.dataset2.id)
+
+        self.annotation2 = Annotation.objects.create(image=self.image, category=self.category2)
+        self.annotation3 = Annotation.objects.create(image=self.image_with_dataset2, category=self.category2)
+        self.annotation4 = Annotation.objects.create(image=self.image, category=self.category2)
+
+        self.boundingbox3 = AnnotationBoundingbox.objects.create(annotation=self.annotation3)
+        self.segmentation4 = AnnotationSegmentation.objects.create(annotation=self.annotation4)
 
 
     def test_index(self):
         response = self.client.get('/api/annotations/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]['image_id'], self.image_id)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['image'], self.image.id)
 
 
-    def test_index_filter(self):
+    def test_index_filter_by_category(self):
         self.create_multi()
 
-        query_string = urlencode({ 'filter' : {'category_id': 11} })
+        query_string = urlencode({ 'filter' : {'category': self.category.id} })
         response = self.client.get('/api/annotations/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.annotation.id, self.annotation2.id])
+        self.assertEqual([e['id'] for e in response.data], [self.annotation.id])
+
+
+    def test_index_filter_by_dataset(self):
+        self.create_multi()
+
+        query_string = urlencode({ 'filter' : {'dataset': self.dataset2.id} })
+        response = self.client.get('/api/annotations/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.annotation3.id])
+
+
+    def test_index_filter_by_type_annotation(self):
+        self.create_multi()
+
+        query_string = urlencode({ 'filter' : { 'type' : 'annotation' } })
+        response = self.client.get('/api/annotations/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.annotation.id, self.annotation2.id, self.annotation3.id, self.annotation4.id])
+
+
+    def test_index_filter_by_type_boundingbox(self):
+        self.create_multi()
+
+        query_string = urlencode({'filter' : { 'type' : 'boundingbox' } })
+        response = self.client.get('/api/annotations/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.annotation3.id])
+
+
+    def test_index_filter_by_type_segmentation(self):
+        self.create_multi()
+
+        query_string = urlencode({'filter' : { 'type' : 'segmentation' } })
+        response = self.client.get('/api/annotations/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.annotation4.id])
 
 
     def test_index_range_first_page(self):
@@ -46,7 +97,7 @@ class TestImages(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['image_id'], self.image_id)
+        self.assertEqual(response.data[0]['image'], self.image.id)
 
 
     def test_index_range_second_page(self):
@@ -57,63 +108,34 @@ class TestImages(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['image_id'], self.annotation2.image_id)
-
-
-    def test_index_filter_and_range(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'category_id': 22} })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['image_id'], self.annotation3.image_id)
-
-
-    def test_index_sort_asc(self):
-        self.create_multi()
-
-        query_string = urlencode({'sort' : [ 'id', 'ASC'] })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]['image_id'], self.image_id)
-
-
-    def test_index_sort_desc(self):
-        self.create_multi()
-
-        query_string = urlencode({'sort' : [ 'id', 'DESC'] })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data[0]['image_id'], self.annotation4.image_id)
+        self.assertEqual(response.data[0]['image'], self.annotation2.image_id)
 
 
     def test_creation(self):
         response = self.client.post('/api/annotations/', {
-            'image_id': self.image_id,
-            'category_id': self.category_id
+            'image': self.image.id,
+            'category': self.category.id
         })
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['image_id'], self.image_id)
+        self.assertEqual(response.data['image'], self.image.id)
 
 
     def test_show(self):
         response = self.client.get('/api/annotations/' + str(self.annotation.id) + '/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['image_id'], self.image_id)
+        self.assertEqual(response.data['image'], self.image.id)
 
 
     def test_edit(self):
-        response1 = self.client.post('/api/annotations/', { 'image_id': 1, 'category_id': 11 })
+        self.create_multi()
+
+        response1 = self.client.post('/api/annotations/', { 'image': self.image.id, 'category': self.category.id })
         created_id = response1.data['id']
         self.assertEqual(response1.status_code, 201)
 
-        new_data = { 'image_id': 2, 'category_id': 22 }
+        new_data = { 'image': self.image.id, 'category': self.category2.id }
         content = encode_multipart('BoUnDaRyStRiNg', new_data)
         content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
         response2 = self.client.put('/api/annotations/' + str(created_id) + '/', content, content_type=content_type)
@@ -123,8 +145,7 @@ class TestImages(TestCase):
         response3 = self.client.get('/api/annotations/' + str(created_id) + '/')    
 
         self.assertEqual(response3.status_code, 200)
-        self.assertEqual(response3.data['image_id'], new_data['image_id'])
-        self.assertEqual(response3.data['category_id'], new_data['category_id'])
+        self.assertEqual(response3.data['category'], new_data['category'])
 
 
     def test_delete(self):
