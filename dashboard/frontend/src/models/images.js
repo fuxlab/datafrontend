@@ -11,6 +11,9 @@ const ImageFilter = (props) => (
         <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty>
             <SelectInput optionText="name" />
         </ReferenceInput>
+        <ReferenceInput label="Category" source="category" reference="categories" allowEmpty perPage={500}>
+            <SelectInput optionText="name" />
+        </ReferenceInput>
     </Filter>
 );
 

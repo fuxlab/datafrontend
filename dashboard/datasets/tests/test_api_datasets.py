@@ -3,21 +3,26 @@ from django.test import Client
 from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
+from projects.models import Project
 from datasets.models import Dataset
 
 class TestApiDatasets(TestCase):
 
     def setUp(self):
         self.client = Client()
+        self.project = Project.objects.create(name='Project 1')
         self.dataset_name = 'Datasetname'
         self.dataset_identifier = 'Identifier'
-        self.dataset = Dataset.objects.create(name=self.dataset_name, project_id=1)
+        self.dataset = Dataset.objects.create(name=self.dataset_name, project=self.project)
 
 
     def create_multi(self):
-        self.dataset2 = Dataset.objects.create(name=self.dataset_name + ' 2', project_id=1)
-        self.dataset3 = Dataset.objects.create(name=self.dataset_name + ' 3', project_id=2)
-        self.dataset4 = Dataset.objects.create(name=self.dataset_name + ' 4', project_id=2)
+        self.project2 = Project.objects.create(name='Project 2')
+        self.project3 = Project.objects.create(name='Project 3')
+        self.project4 = Project.objects.create(name='Project 4')
+        self.dataset2 = Dataset.objects.create(name=self.dataset_name + ' 2', project=self.project)
+        self.dataset3 = Dataset.objects.create(name=self.dataset_name + ' 3', project=self.project2)
+        self.dataset4 = Dataset.objects.create(name=self.dataset_name + ' 4', project=self.project2)
 
 
     def test_index(self):    
@@ -30,7 +35,7 @@ class TestApiDatasets(TestCase):
     def test_index_filter(self):
         self.create_multi()
 
-        query_string = urlencode({ 'filter' : {'project_id': 1} })
+        query_string = urlencode({ 'filter' : {'project': self.project.id } })
         response = self.client.get('/api/datasets/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
@@ -62,7 +67,7 @@ class TestApiDatasets(TestCase):
     def test_index_filter_and_range(self):
         self.create_multi()
 
-        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'project_id': 2} })
+        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'project': self.project2.id} })
         response = self.client.get('/api/datasets/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
@@ -102,7 +107,7 @@ class TestApiDatasets(TestCase):
 
 
     def test_creation(self):
-        response = self.client.post('/api/datasets/', { 'name': self.dataset_name, 'identifier': self.dataset_identifier })
+        response = self.client.post('/api/datasets/', { 'name': self.dataset_name, 'identifier': self.dataset_identifier, 'project': self.project.id })
 
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['name'], self.dataset_name)
@@ -116,11 +121,11 @@ class TestApiDatasets(TestCase):
 
 
     def test_edit(self):
-        response1 = self.client.post('/api/datasets/', { 'name': 'old_name', 'identifier': 'old_identifier' })
+        response1 = self.client.post('/api/datasets/', { 'name': 'old_name', 'identifier': 'old_identifier', 'project': self.project.id  })
         created_id = response1.data['id']
         self.assertEqual(response1.status_code, 201)
 
-        new_data = { 'name': 'new_name', 'identifier': 'new_identifier' }
+        new_data = { 'name': 'new_name', 'identifier': 'new_identifier', 'project': self.project.id }
         content = encode_multipart('BoUnDaRyStRiNg', new_data)
         content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
         response2 = self.client.put('/api/datasets/' + str(created_id) + '/', content, content_type=content_type)

@@ -18,8 +18,8 @@ class DatasetViewSet(DashboardApiBase):
         queryset = Dataset.objects.all()
         
         filter_params = self.get_filter()
-        if 'project_id' in filter_params:
-            q = Dataset.objects.filter(project_id=filter_params['project_id'])
+        if 'project' in filter_params:
+            q = Dataset.objects.filter(project=filter_params['project'])
             queryset = queryset & q
 
         if 'q' in filter_params:

@@ -1,5 +1,5 @@
 from django.db import models
-from datasets.models import Dataset
+from projects.models import Project
 
 class Category(models.Model):
   
@@ -8,7 +8,7 @@ class Category(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
-    dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

@@ -22,6 +22,10 @@ class ImageViewSet(DashboardApiBase):
             q = Image.objects.filter(dataset=filter_params['dataset'])
             queryset = queryset & q
 
+        if 'category' in filter_params:
+            q = Image.objects.filter(annotation__category=filter_params['category'])
+            queryset = queryset & q
+
         if 'q' in filter_params:
             q1 = Image.objects.filter(name__contains=filter_params['q'])
             q2 = Image.objects.filter(url__contains=filter_params['q'])

@@ -7,7 +7,7 @@ import { Create } from 'react-admin';
 const CategoryFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty>
+        <ReferenceInput label="Project" source="project" reference="projects" allowEmpty>
             <SelectInput optionText="name" />
         </ReferenceInput>
     </Filter>
@@ -27,7 +27,7 @@ export const CategoryEdit = props => (
     <Edit {...props}>
         <SimpleForm>
             <DisabledInput source="id" />
-            <ReferenceInput source="dataset" reference="datasets">
+            <ReferenceInput source="project" reference="projects">
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="name" />
@@ -38,7 +38,7 @@ export const CategoryEdit = props => (
 export const CategoryCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <ReferenceInput source="dataset" reference="datasets">
+            <ReferenceInput source="project" reference="projects">
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="name" />

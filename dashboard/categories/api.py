@@ -18,8 +18,8 @@ class CategoryViewSet(DashboardApiBase):
         queryset = Category.objects.all()
         
         filter_params = self.get_filter()
-        if 'dataset' in filter_params:
-            q = Category.objects.filter(dataset=filter_params['dataset'])
+        if 'project' in filter_params:
+            q = Category.objects.filter(project=filter_params['project'])
             queryset = queryset & q
 
         if 'q' in filter_params:

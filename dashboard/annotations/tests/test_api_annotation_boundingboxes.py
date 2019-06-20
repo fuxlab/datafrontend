@@ -3,8 +3,9 @@ from django.test import Client
 from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
-from categories.models import Category
+from projects.models import Project
 from datasets.models import Dataset
+from categories.models import Category
 from images.models import Image
 from annotations.models import Annotation, AnnotationBoundingbox
 
@@ -13,8 +14,9 @@ class TestApiAnnotationBoundingboxes(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.dataset = Dataset.objects.create(name='Test 1')
-        self.category = Category.objects.create(name='Test Category 1', dataset=self.dataset)
+        self.project = Project.objects.create(name='Project 1')
+        self.dataset = Dataset.objects.create(name='Test 1', project=self.project)
+        self.category = Category.objects.create(name='Test Category 1', project=self.project)
         self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
         self.annotation = Annotation.objects.create(image=self.image, category=self.category)
         self.boundingbox = AnnotationBoundingbox.objects.create(
