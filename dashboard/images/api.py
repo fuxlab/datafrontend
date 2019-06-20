@@ -18,8 +18,8 @@ class ImageViewSet(DashboardApiBase):
         queryset = Image.objects.all()
         
         filter_params = self.get_filter()
-        if 'dataset_id' in filter_params:
-            q = Image.objects.filter(dataset_id=filter_params['dataset_id'])
+        if 'dataset' in filter_params:
+            q = Image.objects.filter(dataset=filter_params['dataset'])
             queryset = queryset & q
 
         if 'q' in filter_params:

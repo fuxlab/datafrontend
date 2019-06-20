@@ -4,6 +4,7 @@ from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
 from images.models import Image
+from datasets.models import Dataset
 
 class TestImages(TestCase):
 
@@ -12,13 +13,15 @@ class TestImages(TestCase):
         self.client = Client()
         self.image_name = 'Testimage'
         self.image_url = 'http://test.com/image.jpg'
-        self.image = Image.objects.create(name=self.image_name, dataset_id=1)
+        self.dataset = Dataset.objects.create(name='Test Dataset 1')
+        self.image = Image.objects.create(name=self.image_name, dataset=self.dataset)
 
 
     def create_multi(self):
-        self.image2 = Image.objects.create(name=self.image_name + ' 2', dataset_id=1)
-        self.image3 = Image.objects.create(name=self.image_name + ' 3', dataset_id=2)
-        self.image4 = Image.objects.create(name=self.image_name + ' 4', dataset_id=2)
+        self.dataset2 = Dataset.objects.create(name='Test Dataset 2')
+        self.image2 = Image.objects.create(name=self.image_name + ' 2', dataset=self.dataset)
+        self.image3 = Image.objects.create(name=self.image_name + ' 3', dataset=self.dataset2)
+        self.image4 = Image.objects.create(name=self.image_name + ' 4', dataset=self.dataset2)
 
 
     def test_index(self):
@@ -31,7 +34,7 @@ class TestImages(TestCase):
     def test_index_filter(self):
         self.create_multi()
 
-        query_string = urlencode({ 'filter' : {'dataset_id': 1} })
+        query_string = urlencode({ 'filter' : {'dataset': self.dataset.id} })
         response = self.client.get('/api/images/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
@@ -63,7 +66,7 @@ class TestImages(TestCase):
     def test_index_filter_and_range(self):
         self.create_multi()
 
-        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'dataset_id': 2} })
+        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'dataset': self.dataset2.id} })
         response = self.client.get('/api/images/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
@@ -105,7 +108,8 @@ class TestImages(TestCase):
     def test_creation(self):
         response = self.client.post('/api/images/', {
             'name': self.image_name,
-            'url': self.image_url
+            'url': self.image_url,
+            'dataset': self.dataset.id
         })
 
         self.assertEqual(response.status_code, 201)
@@ -120,11 +124,11 @@ class TestImages(TestCase):
 
 
     def test_edit(self):
-        response1 = self.client.post('/api/images/', { 'name': 'old_name', 'url': 'http://test.com/image.jpg' })
+        response1 = self.client.post('/api/images/', { 'name': 'old_name', 'url': 'http://test.com/image.jpg', 'dataset': self.dataset.id })
         created_id = response1.data['id']
         self.assertEqual(response1.status_code, 201)
 
-        new_data = { 'name': 'new_name', 'url': 'http://test.com/new_image.jpg' }
+        new_data = { 'name': 'new_name', 'url': 'http://test.com/new_image.jpg', 'dataset': self.dataset.id }
         content = encode_multipart('BoUnDaRyStRiNg', new_data)
         content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
         response2 = self.client.put('/api/images/' + str(created_id) + '/', content, content_type=content_type)

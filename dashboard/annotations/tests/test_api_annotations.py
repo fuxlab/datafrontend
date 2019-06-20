@@ -8,20 +8,20 @@ from datasets.models import Dataset
 from images.models import Image
 from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
-class TestImages(TestCase):
+class TestApiAnnotations(TestCase):
 
 
     def setUp(self):
         self.client = Client()
         self.dataset = Dataset.objects.create(name='Test 1')
         self.category = Category.objects.create(name='Test Category 1', dataset=self.dataset)
-        self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg')
+        self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
         self.annotation = Annotation.objects.create(image=self.image, category=self.category)
 
     def create_multi(self):
         self.category2 = Category.objects.create(name='Test Category 3', dataset=self.dataset)
         self.dataset2 = Dataset.objects.create(name='Testdataset 2')
-        self.image_with_dataset2 = Image.objects.create(name='img1', url='http://images.com/img2.jpg', dataset_id=self.dataset2.id)
+        self.image_with_dataset2 = Image.objects.create(name='img1', url='http://images.com/img2.jpg', dataset=self.dataset2)
 
         self.annotation2 = Annotation.objects.create(image=self.image, category=self.category2)
         self.annotation3 = Annotation.objects.create(image=self.image_with_dataset2, category=self.category2)

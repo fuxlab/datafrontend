@@ -58,6 +58,7 @@ const ImageGrid = ({ ids, data, basePath }) => (
                 <a href={data[id].url} style={styles.cardUrl} target="_blank">
                   {data[id].url}
                 </a>
+                {data[id].types}
               </Typography>
             </CardContent>
             <CardActions style={{ textAlign: 'right' }}>

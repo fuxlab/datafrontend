@@ -14,8 +14,14 @@ class Annotation(models.Model):
     def __str__(self):
         return self.id
 
-    def image_preview(self):
+
+    def category_name(self):
+        return self.category.name
+
+
+    def image_name(self):
         return self.image.name
+
 
     def types(self):
         # types should always be only one (!)

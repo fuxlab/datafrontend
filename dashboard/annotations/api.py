@@ -1,7 +1,9 @@
 from rest_framework import permissions
+from rest_framework.response import Response
 from dashboard.lib.api_base import DashboardApiBase
-from .models import Annotation
-from .serializers import AnnotationSerializer
+from .models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from .serializers import AnnotationSerializer, AnnotationBoundingboxSerializer, AnnotationSegmentationSerializer
+
 
 class AnnotationViewSet(DashboardApiBase):
 
@@ -12,9 +14,6 @@ class AnnotationViewSet(DashboardApiBase):
 
 
     def get_queryset(self):
-        '''
-        define queryset
-        '''
         queryset = Annotation.objects.all()
         
         filter_params = self.get_filter()
@@ -28,7 +27,7 @@ class AnnotationViewSet(DashboardApiBase):
             queryset = queryset & q
 
         if 'dataset' in filter_params:
-            q = Annotation.objects.filter(image__dataset_id=filter_params['dataset'])
+            q = Annotation.objects.filter(image__dataset=filter_params['dataset'])
             queryset = queryset & q
 
 
@@ -47,3 +46,63 @@ class AnnotationViewSet(DashboardApiBase):
 
     
         return self.apply_range(queryset.order_by(self.get_sort()))
+
+
+
+class AnnotationBoundingboxViewSet(DashboardApiBase):
+
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = AnnotationBoundingboxSerializer
+
+
+    def get_queryset(self):
+        queryset = AnnotationBoundingbox.objects.all()
+
+        filter_params = self.get_filter()
+
+        if 'annotation' in filter_params:
+            q = AnnotationBoundingbox.objects.filter(annotation=filter_params['annotation'])
+            queryset = queryset & q
+
+        return self.apply_range(queryset.order_by(self.get_sort()))
+
+
+    def list(self, request):
+        # return empty result when annotation is not given for list-views
+        filter_params = self.get_filter()
+        if 'annotation' not in filter_params:
+            return Response([])
+        
+        return super(AnnotationBoundingboxViewSet, self).list(request)
+
+
+
+class AnnotationSegmentationViewSet(DashboardApiBase):
+
+    permission_classes = [
+        permissions.AllowAny
+    ]
+    serializer_class = AnnotationSegmentationSerializer
+
+    
+    def get_queryset(self):
+        queryset = AnnotationSegmentation.objects.all()
+
+        filter_params = self.get_filter()
+
+        if 'annotation' in filter_params:
+            q = AnnotationSegmentation.objects.filter(annotation=filter_params['annotation'])
+            queryset = queryset & q
+
+        return self.apply_range(queryset.order_by(self.get_sort()))
+
+
+    def list(self, request):
+        # return empty result when annotation is not given for list-views
+        filter_params = self.get_filter()
+        if 'annotation' not in filter_params:
+            return Response([])
+        
+        return super(AnnotationSegmentationViewSet, self).list(request)

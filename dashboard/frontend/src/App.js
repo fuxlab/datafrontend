@@ -9,6 +9,9 @@ import { ImageList, ImageEdit, ImageCreate } from './models/images';
 import { CategoryList, CategoryEdit, CategoryCreate } from './models/categories';
 import { AnnotationList, AnnotationEdit, AnnotationCreate } from './models/annotations';
 
+import { AnnotationBoundingboxEdit, AnnotationBoundingboxCreate } from './models/annotation_boundingboxes';
+import { AnnotationSegmentationEdit, AnnotationSegmentationCreate } from './models/annotations_segmentations';
+
 
 import Dashboard from './components/dashboard';
 import authProvider from './components/auth_provider';
@@ -23,6 +26,9 @@ const App = () => (
         <Resource name="categories" list={CategoryList} edit={CategoryEdit} create={CategoryCreate} icon={PostIcon} />
         <Resource name="images" list={ImageList} edit={ImageEdit} create={ImageCreate} icon={PostIcon} />
         <Resource name="annotations" list={AnnotationList} edit={AnnotationEdit} create={AnnotationCreate} icon={PostIcon} />
+        
+        <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />
+        <Resource name="annotation-segmentations" edit={AnnotationSegmentationEdit} create={AnnotationSegmentationCreate} />
     </Admin>
 );
 

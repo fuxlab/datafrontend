@@ -1,30 +1,18 @@
 import React from 'react';
 import { Filter, ReferenceInput, SelectInput } from 'react-admin';
 import { List, Datagrid, TextField, UrlField, EditButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
+import { Edit, SimpleForm, TabbedForm, FormTab, ReferenceManyField, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
-
 import ImageGrid from './../components/image_grid';
 
 const ImageFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Dataset" source="dataset_id" reference="datasets" allowEmpty>
+        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty>
             <SelectInput optionText="name" />
         </ReferenceInput>
     </Filter>
 );
-
-// export const ImageList = props => (
-//    <List filters={<ImageFilter />} {...props}>
-//        <Datagrid rowClick="edit">
-//            <TextField source="id" />
-//            <TextField source="name" />
-//            <UrlField source="url" />
-//            <EditButton />
-//        </Datagrid>
-//    </List>
-//);
 
 export const ImageList = props => (
     <List filters={<ImageFilter />} {...props}>
@@ -34,21 +22,50 @@ export const ImageList = props => (
 
 export const ImageEdit = props => (
     <Edit {...props}>
-        <SimpleForm>
-            <DisabledInput source="id" />
-            <ReferenceInput source="dataset_id" reference="datasets">
-                <SelectInput optionText="name" />
-            </ReferenceInput>
-            <TextInput source="name" />
-            <TextInput source="url" />
-        </SimpleForm>
+        <TabbedForm>
+            <FormTab label="summary">
+                <DisabledInput source="id" />
+                <ReferenceInput source="dataset" reference="datasets">
+                    <SelectInput optionText="name" />
+                </ReferenceInput>
+                <TextInput source="name" />
+                <TextInput source="url" />
+            </FormTab>
+            <FormTab label="annotations">
+                <ReferenceManyField filter={{ 'type' : 'annotation' }} reference="annotations" target="image" addLabel={false}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="category_name" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
+            </FormTab>
+            <FormTab label="boundingboxes">
+                <ReferenceManyField filter={{ 'type' : 'boundingbox' }} reference="annotations" target="image" addLabel={true}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="category_name" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
+            </FormTab>
+            <FormTab label="segmentations">
+                <ReferenceManyField filter={{ 'type' : 'segmentation' }} reference="annotations" target="image" addLabel={true}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="category_name" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
+            </FormTab>
+        </TabbedForm>
     </Edit>
 );
 
 export const ImageCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <ReferenceInput source="dataset_id" reference="datasets">
+            <ReferenceInput source="dataset" reference="datasets">
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="name" />
