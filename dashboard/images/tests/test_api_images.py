@@ -43,39 +43,6 @@ class TestImages(TestCase):
         self.assertEqual([e['id'] for e in response.data], [self.image.id, self.image2.id])
 
 
-    def test_index_range_first_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1] })
-        response = self.client.get('/api/images/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.image_name)
-
-
-    def test_index_range_second_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [1, 2] })
-        response = self.client.get('/api/images/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.image2.name)
-
-
-    def test_index_filter_and_range(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'dataset': self.dataset2.id} })
-        response = self.client.get('/api/images/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.image3.name)
-
-
     def test_index_sort_asc(self):
         self.create_multi()
 

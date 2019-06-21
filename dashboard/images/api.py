@@ -31,4 +31,4 @@ class ImageViewSet(DashboardApiBase):
             q2 = Image.objects.filter(url__contains=filter_params['q'])
             queryset = queryset & (q1 | q2)
     
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())

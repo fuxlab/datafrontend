@@ -42,39 +42,6 @@ class TestApiDatasets(TestCase):
         self.assertEqual([e['id'] for e in response.data], [self.dataset.id, self.dataset2.id])
 
 
-    def test_index_range_first_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1] })
-        response = self.client.get('/api/datasets/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.dataset_name)
-
-
-    def test_index_range_second_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [1, 2] })
-        response = self.client.get('/api/datasets/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.dataset2.name)
-
-
-    def test_index_filter_and_range(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1], 'filter' : {'project': self.project2.id} })
-        response = self.client.get('/api/datasets/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.dataset3.name)
-
-
     def test_index_sort_asc(self):
         self.create_multi()
 
