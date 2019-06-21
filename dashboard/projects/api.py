@@ -1,6 +1,7 @@
 # Create your views here.
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
+from dashboard.lib.pagination import Pagination
 
 from .models import Project
 from .serializers import ProjectSerializer
@@ -9,9 +10,8 @@ class ProjectViewSet(DashboardApiBase):
     permission_classes = [
         permissions.AllowAny
     ]
+    
     serializer_class = ProjectSerializer
-
-
 
     def get_queryset(self):
         '''
@@ -25,4 +25,4 @@ class ProjectViewSet(DashboardApiBase):
             q1 = Project.objects.filter(name__contains=filter_params['q'])
             queryset = queryset & q1
     
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())

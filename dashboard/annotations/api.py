@@ -45,7 +45,7 @@ class AnnotationViewSet(DashboardApiBase):
                     queryset = queryset & q
 
     
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())
 
 
 
@@ -66,7 +66,7 @@ class AnnotationBoundingboxViewSet(DashboardApiBase):
             q = AnnotationBoundingbox.objects.filter(annotation=filter_params['annotation'])
             queryset = queryset & q
 
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())
 
 
     def list(self, request):
@@ -96,7 +96,7 @@ class AnnotationSegmentationViewSet(DashboardApiBase):
             q = AnnotationSegmentation.objects.filter(annotation=filter_params['annotation'])
             queryset = queryset & q
 
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())
 
 
     def list(self, request):

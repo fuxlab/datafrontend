@@ -26,4 +26,4 @@ class CategoryViewSet(DashboardApiBase):
             q1 = Category.objects.filter(name__contains=filter_params['q'])
             queryset = queryset & (q1)
     
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())

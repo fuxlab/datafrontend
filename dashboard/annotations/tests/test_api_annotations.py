@@ -91,28 +91,6 @@ class TestApiAnnotations(TestCase):
         self.assertEqual([e['id'] for e in response.data], [self.annotation4.id])
 
 
-    def test_index_range_first_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [0, 1] })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['image'], self.image.id)
-
-
-    def test_index_range_second_page(self):
-        self.create_multi()
-
-        query_string = urlencode({ 'range' : [1, 2] })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['image'], self.annotation2.image_id)
-
-
     def test_creation(self):
         response = self.client.post('/api/annotations/', {
             'image': self.image.id,

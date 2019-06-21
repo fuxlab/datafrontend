@@ -36,6 +36,7 @@ class DashboardApiBase(viewsets.ModelViewSet):
     
     def apply_range(self, queryset):
         '''
+        depricated:
         apply range params to queryset if requested
         '''
         default_size = 10

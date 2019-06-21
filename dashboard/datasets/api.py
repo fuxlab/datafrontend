@@ -27,4 +27,4 @@ class DatasetViewSet(DashboardApiBase):
             q2 = Dataset.objects.filter(identifier__contains=filter_params['q'])
             queryset = queryset & (q1 | q2)
     
-        return self.apply_range(queryset.order_by(self.get_sort()))
+        return queryset.order_by(self.get_sort())
