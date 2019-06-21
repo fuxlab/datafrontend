@@ -7,4 +7,4 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = Image
-        fields = ( 'id', 'dataset_id', 'name', 'url', )
+        fields = ( 'id', 'dataset', 'name', 'url', 'types', )

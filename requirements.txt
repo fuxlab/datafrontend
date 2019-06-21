@@ -5,3 +5,4 @@ djangorestframework
 scrapy
 requests
 google-cloud-bigquery
+django-extensions

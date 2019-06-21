@@ -1,9 +1,8 @@
 from django.db import models
 from projects.models import Project
 
-class Dataset(models.Model):
+class Category(models.Model):
   
-    identifier = models.SlugField(null=True)
     name = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)

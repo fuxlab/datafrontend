@@ -37,9 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'webpack_loader',
     'projects.apps.ProjectsConfig',
     'datasets.apps.DatasetsConfig',
+    'categories.apps.CategoriesConfig',
+    'annotations.apps.AnnotationsConfig',
     'images.apps.ImagesConfig',
 ]
 

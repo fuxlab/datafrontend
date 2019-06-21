@@ -1,30 +1,29 @@
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
 
-from .models import Dataset
-from .serializers import DatasetSerializer
+from .models import Category
+from .serializers import CategorySerializer
 
-class DatasetViewSet(DashboardApiBase):
+class CategoryViewSet(DashboardApiBase):
     permission_classes = [
         permissions.AllowAny
     ]
-    serializer_class = DatasetSerializer
+    serializer_class = CategorySerializer
 
 
     def get_queryset(self):
         '''
         define queryset
         '''
-        queryset = Dataset.objects.all()
+        queryset = Category.objects.all()
         
         filter_params = self.get_filter()
         if 'project' in filter_params:
-            q = Dataset.objects.filter(project=filter_params['project'])
+            q = Category.objects.filter(project=filter_params['project'])
             queryset = queryset & q
 
         if 'q' in filter_params:
-            q1 = Dataset.objects.filter(name__contains=filter_params['q'])
-            q2 = Dataset.objects.filter(identifier__contains=filter_params['q'])
-            queryset = queryset & (q1 | q2)
+            q1 = Category.objects.filter(name__contains=filter_params['q'])
+            queryset = queryset & (q1)
     
         return self.apply_range(queryset.order_by(self.get_sort()))
