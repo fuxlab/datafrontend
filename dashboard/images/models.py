@@ -21,16 +21,16 @@ class Image(models.Model):
         return '/api/image/%s.png' % (self.id)
 
     def types(self):
-        # types should always be only one (!)
-        types = []
-        if self.annotation_set.count() > 0:
-            for annotation in self.annotation_set.all():
-                name = annotation.category_name()
-                boundingbox_count = annotation.annotationboundingbox_set.count()
-                segmentation_count = annotation.annotationsegmentation_set.count()
-                if boundingbox_count > 0:
-                    types.append('[ ' + name + ': BoundingBox (' + str(boundingbox_count)+ ') ]')
-                if segmentation_count > 0:
-                    types.append('[' + name + ': Segmentation (' + str(segmentation_count) + ') ]')
         
+        types = []
+        
+        for annotation in self.annotationboundingbox_set.all():
+            types.append('[ BB ' + str(annotation.category.name)+ ' ]')
+        
+        for annotation in self.annotationsegmentation_set.all():
+            types.append('[ SG ' + str(annotation.category.name)+ ' ]')
+        
+        for annotation in self.annotation_set.all():
+            types.append('[ AN ' + str(annotation.category.name)+ ' ]')
+
         return ' '.join(types)

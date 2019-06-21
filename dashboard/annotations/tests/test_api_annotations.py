@@ -7,7 +7,7 @@ from projects.models import Project
 from categories.models import Category
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation
 
 class TestApiAnnotations(TestCase):
 
@@ -28,9 +28,6 @@ class TestApiAnnotations(TestCase):
         self.annotation2 = Annotation.objects.create(image=self.image, category=self.category2)
         self.annotation3 = Annotation.objects.create(image=self.image_with_dataset2, category=self.category2)
         self.annotation4 = Annotation.objects.create(image=self.image, category=self.category2)
-
-        self.boundingbox3 = AnnotationBoundingbox.objects.create(annotation=self.annotation3)
-        self.segmentation4 = AnnotationSegmentation.objects.create(annotation=self.annotation4)
 
 
     def test_index(self):
@@ -69,26 +66,6 @@ class TestApiAnnotations(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual([e['id'] for e in response.data], [self.annotation.id, self.annotation2.id, self.annotation3.id, self.annotation4.id])
-
-
-    def test_index_filter_by_type_boundingbox(self):
-        self.create_multi()
-
-        query_string = urlencode({'filter' : { 'type' : 'boundingbox' } })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.annotation3.id])
-
-
-    def test_index_filter_by_type_segmentation(self):
-        self.create_multi()
-
-        query_string = urlencode({'filter' : { 'type' : 'segmentation' } })
-        response = self.client.get('/api/annotations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.annotation4.id])
 
 
     def test_creation(self):

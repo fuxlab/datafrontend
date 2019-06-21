@@ -25,12 +25,12 @@ class Annotation(models.Model):
 
     def types(self):
         # types should always be only one (!)
-        types = []
-        if self.annotationboundingbox_set.count() > 0:
-            types.append('BoundingBox')
-        if self.annotationsegmentation_set.count() > 0:
-            types.append('Segmentation')
-        return ', '.join(types)
+        #types = []
+        #if self.annotationboundingbox_set.count() > 0:
+        #    types.append('BoundingBox')
+        #if self.annotationsegmentation_set.count() > 0:
+        #    types.append('Segmentation')
+        return 'none'
 
 
 class AnnotationBoundingbox(models.Model):
@@ -43,7 +43,8 @@ class AnnotationBoundingbox(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
-    annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.id
@@ -59,7 +60,8 @@ class AnnotationSegmentation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
-    annotation = models.ForeignKey(Annotation, on_delete=models.CASCADE)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.id

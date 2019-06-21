@@ -22,8 +22,16 @@ class ImageViewSet(DashboardApiBase):
             q = Image.objects.filter(dataset=filter_params['dataset'])
             queryset = queryset & q
 
-        if 'category' in filter_params:
-            q = Image.objects.filter(annotation__category=filter_params['category'])
+        if 'annotation' in filter_params:
+            q = Image.objects.filter(annotation__category=filter_params['annotation'])
+            queryset = queryset & q
+
+        if 'boundingbox' in filter_params:
+            q = Image.objects.filter(annotationboundingbox__category=filter_params['boundingbox'])
+            queryset = queryset & q
+
+        if 'segmentation' in filter_params:
+            q = Image.objects.filter(annotationsegmentation__category=filter_params['segmentation'])
             queryset = queryset & q
 
         if 'q' in filter_params:
