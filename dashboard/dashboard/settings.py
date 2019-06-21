@@ -124,6 +124,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+DATAFRONTEND = {
+    'DATA_PATH': os.environ.get('DATA_PATH')
+}
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 

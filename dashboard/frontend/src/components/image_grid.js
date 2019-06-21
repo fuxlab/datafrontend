@@ -15,6 +15,14 @@ const styles = {
     display: 'inline-block',
     verticalAlign: 'top',
   },
+  cardHeadline: {
+    color: '#000',
+    fontSize: '1.2em',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    display: 'block',
+  },
   cardUrl: {
     color: '#ccc',
     fontSize: '0.8em',
@@ -26,13 +34,14 @@ const styles = {
   mediaWrapper: {
     backgroundColor: '#000',
     padding: '0.5em',
+    minHeight: 200,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  media: {
+  mediaImage: {
     width: 'auto',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    minHeight: 150,
-    maxHeight: 300,
   }
 };
 
@@ -41,17 +50,17 @@ const ImageGrid = ({ ids, data, basePath }) => (
       {ids.map(id =>
          <Card key={id} style={styles.card}>
             <div style={styles.mediaWrapper}>
-              <CardMedia style={styles.media}
+              <CardMedia style={styles.mediaImage}
                 component="img"
                 alt={data[id].name}
                 title={data[id].name}
-                image={data[id].url}
+                image={data[id].image}
                 basePath={basePath}
                 record={data[id]}
               />
             </div>
             <CardContent>
-              <Typography gutterBottom variant="headline" component="h2">
+              <Typography gutterBottom variant="headline" component="h2" style={styles.cardHeadline}>
                 {data[id].name}
               </Typography>
               <Typography component="p">

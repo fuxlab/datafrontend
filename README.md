@@ -10,6 +10,9 @@ docker-compose run datafrontend python manage.py makemigrations results
 Run Tests:
 docker-compose run datafrontend python manage.py test
 
+Show All Routes:
+docker-compose run datafrontend python manage.py show_urls
+
 Recreate JS-Files (and keep watching):
 docker-compose up datafrontend
 docker-compose exec datafrontend bash > cd frontend && yarn build

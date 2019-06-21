@@ -7,14 +7,18 @@ class Image(models.Model):
     type_id = models.IntegerField(null=True)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
-    url = models.CharField(max_length=2048)
-    name = models.CharField(max_length=2048)
+    url = models.CharField(max_length=2048, null=True)
+    path = models.CharField(max_length=2048, null=True)
+    name = models.CharField(max_length=2048, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+    def image(self):
+        return '/api/image/%s.png' % (self.id)
 
     def types(self):
         # types should always be only one (!)
