@@ -17,7 +17,7 @@ class AnnotationBoundingboxSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = AnnotationBoundingbox
-        fields = ( 'id', 'annotation', 'x_min', 'x_max', 'y_min', 'y_max' )
+        fields = ( 'id', 'image', 'category', 'category_name', 'x_min', 'x_max', 'y_min', 'y_max' )
 
 
 
@@ -26,6 +26,5 @@ class AnnotationSegmentationSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = AnnotationSegmentation
-        fields = ( 'id', 'annotation', 'mask', 'width', 'height' )
-
+        fields = ( 'id', 'image', 'category', 'category_name', 'mask', 'width', 'height' )
 

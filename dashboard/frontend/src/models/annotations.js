@@ -42,26 +42,6 @@ export const AnnotationEdit = props => (
             <ReferenceInput source="category" reference="categories">
                 <SelectInput optionText="name" />
             </ReferenceInput>
-
-            <ReferenceManyField pagination={<Pagination />} reference="annotation-boundingboxes" target="annotation" addLabel={true}>
-                <Datagrid>
-                    <TextField source="id" />
-                    <TextField source="category_name" />
-                    <EditButton />
-                </Datagrid>
-            </ReferenceManyField>
-            <AddAnnotationBoundingboxButton />
-
-        
-            <ReferenceManyField pagination={<Pagination />} reference="annotation-segmentations" target="annotation" addLabel={true}>
-                <Datagrid>
-                    <TextField source="id" />
-                    <TextField source="category_name" />
-                    <EditButton />
-                </Datagrid>
-            </ReferenceManyField>
-            <AddAnnotationSegmentationButton />
-
         </SimpleForm>
     </Edit>
 );

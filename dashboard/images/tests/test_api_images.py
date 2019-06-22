@@ -4,8 +4,11 @@ from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
 from projects.models import Project
+from categories.models import Category
 from images.models import Image
 from datasets.models import Dataset
+
+from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
 class TestImages(TestCase):
 
@@ -41,6 +44,47 @@ class TestImages(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual([e['id'] for e in response.data], [self.image.id, self.image2.id])
+
+
+    def test_index_filter_annotation_type(self):
+        self.create_multi()
+
+        category1 = Category.objects.create(project=self.project, name='Category 1')
+        category2 = Category.objects.create(project=self.project, name='Category 2')
+        category3 = Category.objects.create(project=self.project, name='Category 3')
+
+        annotation1 = Annotation.objects.create(image=self.image, category=category1)
+        annotation2 = Annotation.objects.create(image=self.image2, category=category2)
+        annotation3 = Annotation.objects.create(image=self.image3, category=category3)
+
+        annotation_boundingbox1 = AnnotationBoundingbox.objects.create(image=self.image, category=category1)
+        annotation_boundingbox2 = AnnotationBoundingbox.objects.create(image=self.image2, category=category2)
+        annotation_boundingbox2 = AnnotationBoundingbox.objects.create(image=self.image3, category=category3)
+
+        annotation_segmentation1 = AnnotationSegmentation.objects.create(image=self.image, category=category1)
+        annotation_segmentation2 = AnnotationSegmentation.objects.create(image=self.image2, category=category2)
+        annotation_segmentation2 = AnnotationSegmentation.objects.create(image=self.image3, category=category3)
+
+
+        query_string = urlencode({ 'filter' : {'annotation': category1.id} })
+        response = self.client.get('/api/images/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.image.id])
+
+
+        query_string = urlencode({ 'filter' : {'boundingbox': category2.id} })
+        response = self.client.get('/api/images/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.image2.id])
+
+
+        query_string = urlencode({ 'filter' : {'segmentation': category3.id} })
+        response = self.client.get('/api/images/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.image3.id])
 
 
     def test_index_sort_asc(self):

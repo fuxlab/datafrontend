@@ -8,10 +8,16 @@ import ImageGrid from './../components/image_grid';
 const ImageFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty>
+        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty perPage={500}>
             <SelectInput optionText="name" />
         </ReferenceInput>
-        <ReferenceInput label="Category" source="category" reference="categories" allowEmpty perPage={500}>
+        <ReferenceInput label="Annotation" source="annotation" reference="categories" allowEmpty perPage={500}>
+            <SelectInput optionText="name" />
+        </ReferenceInput>
+        <ReferenceInput label="Boundingbox" source="boundingbox" reference="categories" allowEmpty perPage={500}>
+            <SelectInput optionText="name" />
+        </ReferenceInput>
+        <ReferenceInput label="Segmentation" source="segmentation" reference="categories" allowEmpty perPage={500}>
             <SelectInput optionText="name" />
         </ReferenceInput>
     </Filter>
@@ -34,8 +40,9 @@ export const ImageEdit = props => (
                 <TextInput source="name" />
                 <TextInput source="url" />
             </FormTab>
+            
             <FormTab label="annotations">
-                <ReferenceManyField filter={{ 'type' : 'annotation' }} reference="annotations" target="image" addLabel={false}>
+                <ReferenceManyField reference="annotations" target="image" addLabel={false}>
                     <Datagrid>
                         <TextField source="id" />
                         <TextField source="category_name" />
@@ -43,20 +50,28 @@ export const ImageEdit = props => (
                     </Datagrid>
                 </ReferenceManyField>
             </FormTab>
+            
             <FormTab label="boundingboxes">
-                <ReferenceManyField filter={{ 'type' : 'boundingbox' }} reference="annotations" target="image" addLabel={true}>
+                <ReferenceManyField reference="annotation-boundingboxes" target="image" addLabel={true}>
                     <Datagrid>
                         <TextField source="id" />
                         <TextField source="category_name" />
+                        <TextField source="x_min" />
+                        <TextField source="x_max" />
+                        <TextField source="y_min" />
+                        <TextField source="y_max" />
                         <EditButton />
                     </Datagrid>
                 </ReferenceManyField>
             </FormTab>
+            
             <FormTab label="segmentations">
-                <ReferenceManyField filter={{ 'type' : 'segmentation' }} reference="annotations" target="image" addLabel={true}>
+                <ReferenceManyField reference="annotation-segmentations" target="image" addLabel={true}>
                     <Datagrid>
                         <TextField source="id" />
                         <TextField source="category_name" />
+                        <TextField source="width" />
+                        <TextField source="height" />
                         <EditButton />
                     </Datagrid>
                 </ReferenceManyField>

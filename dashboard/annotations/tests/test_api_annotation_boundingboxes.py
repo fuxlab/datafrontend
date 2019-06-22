@@ -18,9 +18,9 @@ class TestApiAnnotationBoundingboxes(TestCase):
         self.dataset = Dataset.objects.create(name='Test 1', project=self.project)
         self.category = Category.objects.create(name='Test Category 1', project=self.project)
         self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
-        self.annotation = Annotation.objects.create(image=self.image, category=self.category)
         self.boundingbox = AnnotationBoundingbox.objects.create(
-            annotation=self.annotation,
+            image=self.image,
+            category=self.category,
             x_min=100.0,
             x_max=200.0,
             y_min=200.0,
@@ -39,25 +39,18 @@ class TestApiAnnotationBoundingboxes(TestCase):
         self.assertEqual(len(response.data), 0)
 
 
-    def test_index_filter_by_annotation(self):
-        query_string = urlencode({ 'filter' : {'annotation': self.annotation.id} })
-        response = self.client.get('/api/annotation-boundingboxes/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.boundingbox.id])
-
-
     def test_creation_boundingbox(self):
         response = self.client.post('/api/annotation-boundingboxes/', {
-             'annotation': self.annotation.id,
-             'x_min': 100.0,
-             'x_max': 200.0,
-             'y_min': 200.0,
-             'y_max': 300.0
+            'image': self.image.id,
+            'category': self.category.id,
+            'x_min': 100.0,
+            'x_max': 200.0,
+            'y_min': 200.0,
+            'y_max': 300.0
         })
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['annotation'], self.annotation.id)
+        self.assertEqual(response.data['image'], self.image.id)
 
 
     def test_show(self):
@@ -71,7 +64,8 @@ class TestApiAnnotationBoundingboxes(TestCase):
         self.create_multi()
 
         response1 = self.client.post('/api/annotation-boundingboxes/', {
-            'annotation': self.annotation.id,
+            'image': self.image.id,
+            'category': self.category.id,
             'x_min': 100.0,
             'x_max': 200.0,
             'y_min': 200.0,
@@ -81,7 +75,8 @@ class TestApiAnnotationBoundingboxes(TestCase):
         self.assertEqual(response1.status_code, 201)
 
         new_data = { 
-            'annotation': self.annotation.id,
+            'image': self.image.id,
+            'category': self.category.id,
             'x_min': 600.0,
             'x_max': 600.0,
             'y_min': 600.0,

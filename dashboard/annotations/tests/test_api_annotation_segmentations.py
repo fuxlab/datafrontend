@@ -18,9 +18,9 @@ class TestApiAnnotationSegmentations(TestCase):
         self.dataset = Dataset.objects.create(name='Test 1', project=self.project)
         self.category = Category.objects.create(name='Test Category 1', project=self.project)
         self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
-        self.annotation = Annotation.objects.create(image=self.image, category=self.category)
         self.segmentation = AnnotationSegmentation.objects.create(
-            annotation=self.annotation,
+            image=self.image,
+            category=self.category,
             width=800,
             height=600,
             mask='emptymask'
@@ -38,24 +38,17 @@ class TestApiAnnotationSegmentations(TestCase):
         self.assertEqual(len(response.data), 0)
 
 
-    def test_index_filter_by_annotation(self):
-        query_string = urlencode({ 'filter' : {'annotation': self.annotation.id} })
-        response = self.client.get('/api/annotation-segmentations/?' + query_string)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.segmentation.id])
-
-
-    def test_creation_boundingbox(self):
+    def test_creation(self):
         response = self.client.post('/api/annotation-segmentations/', {
-            'annotation': self.annotation.id,
+            'image': self.image.id,
+            'category': self.category.id,
             'width': 800,
             'height': 600,
             'mask': 'emptymask'
         })
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['annotation'], self.annotation.id)
+        self.assertEqual(response.data['image'], self.image.id)
 
 
     def test_show(self):
@@ -69,7 +62,8 @@ class TestApiAnnotationSegmentations(TestCase):
         self.create_multi()
 
         response1 = self.client.post('/api/annotation-segmentations/', {
-            'annotation': self.annotation.id,
+            'image': self.image.id,
+            'category': self.category.id,
             'width': 800,
             'height': 600,
             'mask': 'emptymask'
@@ -78,7 +72,8 @@ class TestApiAnnotationSegmentations(TestCase):
         self.assertEqual(response1.status_code, 201)
 
         new_data = { 
-            'annotation': self.annotation.id,
+            'image': self.image.id,
+            'category': self.category.id,
             'width': 1000,
             'height': 2000,
             'mask': 'emptymask'
