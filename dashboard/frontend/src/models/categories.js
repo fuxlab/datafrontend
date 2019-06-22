@@ -18,6 +18,9 @@ export const CategoryList = props => (
         <Datagrid rowClick="edit">
             <TextField source="id" />
             <TextField source="name" />
+            <TextField source="annotations_count" />
+            <TextField source="boundingboxes_count" />
+            <TextField source="segmentations_count" />
             <EditButton />
         </Datagrid>
     </List>
