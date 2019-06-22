@@ -50,6 +50,10 @@ class AnnotationBoundingbox(models.Model):
         return self.id
 
 
+    def category_name(self):
+        return self.category.name
+
+
 class AnnotationSegmentation(models.Model):
 
     width = models.IntegerField(null=True)
@@ -65,3 +69,7 @@ class AnnotationSegmentation(models.Model):
 
     def __str__(self):
         return self.id
+
+
+    def category_name(self):
+        return self.category.name

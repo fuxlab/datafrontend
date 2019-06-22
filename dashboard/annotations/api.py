@@ -34,9 +34,6 @@ class AnnotationViewSet(DashboardApiBase):
         if 'type' in filter_params:
             filter_types = filter_params['type'].split(',')
             for filter_type in filter_types:
-                #if filter_type == 'annotation':
-                #    # q = Annotation.objects.filter(category_id=filter_params['category_id'])
-                #    # queryset = queryset & q
                 if filter_type == 'boundingbox':
                     q = Annotation.objects.exclude(annotationboundingbox=None)
                     queryset = queryset & q
@@ -62,20 +59,11 @@ class AnnotationBoundingboxViewSet(DashboardApiBase):
 
         filter_params = self.get_filter()
 
-        if 'annotation' in filter_params:
-            q = AnnotationBoundingbox.objects.filter(annotation=filter_params['annotation'])
+        if 'image' in filter_params:
+            q = AnnotationBoundingbox.objects.filter(image=filter_params['image'])
             queryset = queryset & q
 
         return queryset.order_by(self.get_sort())
-
-
-    def list(self, request):
-        # return empty result when annotation is not given for list-views
-        filter_params = self.get_filter()
-        if 'annotation' not in filter_params:
-            return Response([])
-        
-        return super(AnnotationBoundingboxViewSet, self).list(request)
 
 
 
@@ -92,17 +80,11 @@ class AnnotationSegmentationViewSet(DashboardApiBase):
 
         filter_params = self.get_filter()
 
-        if 'annotation' in filter_params:
-            q = AnnotationSegmentation.objects.filter(annotation=filter_params['annotation'])
+        if 'image' in filter_params:
+
+            q = AnnotationSegmentation.objects.filter(image=filter_params['image'])
             queryset = queryset & q
+
 
         return queryset.order_by(self.get_sort())
 
-
-    def list(self, request):
-        # return empty result when annotation is not given for list-views
-        filter_params = self.get_filter()
-        if 'annotation' not in filter_params:
-            return Response([])
-        
-        return super(AnnotationSegmentationViewSet, self).list(request)

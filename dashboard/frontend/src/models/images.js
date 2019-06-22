@@ -56,6 +56,10 @@ export const ImageEdit = props => (
                     <Datagrid>
                         <TextField source="id" />
                         <TextField source="category_name" />
+                        <TextField source="x_min" />
+                        <TextField source="x_max" />
+                        <TextField source="y_min" />
+                        <TextField source="y_max" />
                         <EditButton />
                     </Datagrid>
                 </ReferenceManyField>
@@ -66,6 +70,8 @@ export const ImageEdit = props => (
                     <Datagrid>
                         <TextField source="id" />
                         <TextField source="category_name" />
+                        <TextField source="width" />
+                        <TextField source="height" />
                         <EditButton />
                     </Datagrid>
                 </ReferenceManyField>
