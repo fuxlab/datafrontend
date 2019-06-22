@@ -36,7 +36,7 @@ class TestApiAnnotationBoundingboxes(TestCase):
         response = self.client.get('/api/annotation-boundingboxes/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(len(response.data), 1)
 
 
     def test_creation_boundingbox(self):
