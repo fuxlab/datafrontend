@@ -40,6 +40,7 @@ class Category(models.Model):
         '''
         return self.annotationboundingbox_set.count()
 
+
     def segmentations_count(self):
         '''
         reuturn count of segmentations

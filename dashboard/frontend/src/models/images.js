@@ -5,20 +5,40 @@ import { Edit, SimpleForm, TabbedForm, FormTab, ReferenceManyField, TextInput, D
 import { Create } from 'react-admin';
 import ImageGrid from './../components/image_grid';
 
+
+const annotationNameRenderer = choice => `${choice.name} (${choice.annotations_count})`;
+const boundingboxNameRenderer = choice => `${choice.name} (${choice.boundingboxes_count})`;
+const segmentationNameRenderer = choice => `${choice.name} (${choice.segmentations_count})`;
+
 const ImageFilter = (props) => (
     <Filter {...props}>
         <TextInput label="Search" source="q" alwaysOn />
-        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty perPage={500}>
+        <ReferenceInput label="Dataset" source="dataset" reference="datasets" allowEmpty perPage={1000}>
             <SelectInput optionText="name" />
         </ReferenceInput>
-        <ReferenceInput label="Annotation" source="annotation" reference="categories" allowEmpty perPage={500}>
-            <SelectInput optionText="name" />
+        <ReferenceInput
+            label="Annotation"
+            source="annotation"
+            reference="categories"
+            sort={{ field: 'name', order: 'ASC' }}
+            allowEmpty perPage={1000}>
+            <SelectInput optionText={annotationNameRenderer} />
         </ReferenceInput>
-        <ReferenceInput label="Boundingbox" source="boundingbox" reference="categories" allowEmpty perPage={500}>
-            <SelectInput optionText="name" />
+        <ReferenceInput
+            label="Boundingbox"
+            source="boundingbox"
+            reference="categories"
+            sort={{ field: 'name', order: 'ASC' }}
+            allowEmpty perPage={1000}>
+            <SelectInput optionText={boundingboxNameRenderer} />
         </ReferenceInput>
-        <ReferenceInput label="Segmentation" source="segmentation" reference="categories" allowEmpty perPage={500}>
-            <SelectInput optionText="name" />
+        <ReferenceInput
+            label="Segmentation"
+            source="segmentation"
+            reference="categories"
+            sort={{ field: 'name', order: 'ASC' }}
+            allowEmpty perPage={1000}>
+            <SelectInput optionText={segmentationNameRenderer} />
         </ReferenceInput>
     </Filter>
 );
