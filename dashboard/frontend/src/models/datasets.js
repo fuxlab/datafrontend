@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, ReferenceInput, SelectInput } from 'react-admin';
 import { List, Datagrid, TextField, EditButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
+import { Edit, SimpleForm, TextInput, DisabledInput, ReferenceManyField } from 'react-admin';
 import { Create } from 'react-admin';
 
 const DatasetFilter = (props) => (
@@ -19,6 +19,7 @@ export const DatasetList = props => (
             <TextField source="id" />
             <TextField source="identifier" />
             <TextField source="name" />
+            <TextField source="images_count" />
             <EditButton />
         </Datagrid>
     </List>
@@ -33,6 +34,34 @@ export const DatasetEdit = props => (
             </ReferenceInput>
             <TextInput source="identifier" />
             <TextInput source="name" />
+
+            <ReferenceManyField reference="categories" target="dataset_annotation" addLabel={false}>
+                <Datagrid>
+                    <TextField source="id" />
+                    <TextField source="name" />
+                    <TextField source="annotations_count" />
+                    <EditButton />
+                </Datagrid>
+            </ReferenceManyField>
+
+            <ReferenceManyField reference="categories" target="dataset_boundingbox" addLabel={false}>
+                <Datagrid>
+                    <TextField source="id" />
+                    <TextField source="name" />
+                    <TextField source="boundingboxes_count" />
+                    <EditButton />
+                </Datagrid>
+            </ReferenceManyField>
+
+            <ReferenceManyField reference="categories" target="dataset_segmentation" addLabel={false}>
+                <Datagrid>
+                    <TextField source="id" />
+                    <TextField source="name" />
+                    <TextField source="segmentations_count" />
+                    <EditButton />
+                </Datagrid>
+            </ReferenceManyField>
+
         </SimpleForm>
     </Edit>
 );

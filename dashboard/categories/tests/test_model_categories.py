@@ -18,7 +18,11 @@ class TestModelCategories(TestCase):
         self.client = Client()
         self.category_name = 'Categoryname'
         self.project = Project.objects.create(name='Testproject 1')
+        self.project2 = Project.objects.create(name='Testproject 2')
+        
         self.dataset = Dataset.objects.create(name='test', project=self.project)
+        self.dataset2 = Dataset.objects.create(name='test 2', project=self.project2)
+        
         self.category = Category.objects.create(name=self.category_name, project=self.project)
         self.category2 = Category.objects.create(name=self.category_name + ' 2', project=self.project)
 
@@ -26,6 +30,7 @@ class TestModelCategories(TestCase):
     def test_counts(self):
 
         image = Image.objects.create(url='123456', dataset=self.dataset)
+        image2 = Image.objects.create(url='1234562', dataset=self.dataset2)
 
         Annotation.objects.create(category=self.category, image=image)
         Annotation.objects.create(category=self.category2, image=image)
@@ -38,4 +43,5 @@ class TestModelCategories(TestCase):
 
         self.assertEqual(self.category.images_count(), 1)
         self.assertEqual(self.category.annotations_count(), 1)
+        self.assertEqual(self.category.boundingboxes_count(), 1)
         self.assertEqual(self.category.segmentations_count(), 1)

@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
+from django.db.models import Q
 
 from .models import Category
 from .serializers import CategorySerializer
@@ -15,15 +16,27 @@ class CategoryViewSet(DashboardApiBase):
         '''
         define queryset
         '''
-        queryset = Category.objects.all()
-        
+        qs = Q()
         filter_params = self.get_filter()
+
         if 'project' in filter_params:
-            q = Category.objects.filter(project=filter_params['project'])
-            queryset = queryset & q
+            qs.add(Q(project=filter_params['project']), Q.AND)
 
         if 'q' in filter_params:
-            q1 = Category.objects.filter(name__contains=filter_params['q'])
-            queryset = queryset & (q1)
+            qs.add(Q(name__contains=filter_params['q']), Q.AND)
+
+        if 'dataset_annotation' in filter_params:
+            qs.add((
+                Q(annotationboundingbox__image__dataset_id=filter_params['dataset_annotation'])
+            ), Q.AND)
+        if 'dataset_boundingbox' in filter_params:
+            qs.add((
+                Q(annotationboundingbox__image__dataset_id=filter_params['dataset_boundingbox'])
+            ), Q.AND)
+        if 'dataset_segmentation' in filter_params:
+            qs.add((
+                Q(annotationsegmentation__image__dataset_id=filter_params['dataset_segmentation'])
+            ), Q.AND)
+
     
-        return queryset.order_by(self.get_sort())
+        return Category.objects.filter(qs).distinct().order_by(self.get_sort())

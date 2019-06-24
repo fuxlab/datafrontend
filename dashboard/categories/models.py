@@ -1,4 +1,8 @@
 from django.db import models
+from django.db.models import Count
+from django.db.models import Q
+
+
 from projects.models import Project
 from images.models import Image
 
@@ -18,13 +22,15 @@ class Category(models.Model):
     def images_count(self):
         '''
         return counf of distinct images
+        use wisly, might be slow
         '''
-        q1 = Image.objects.filter(annotation__category_id=self.id)
-        q2 = Image.objects.filter(annotationboundingbox__category_id=self.id)
-        q3 = Image.objects.filter(annotationsegmentation__category_id=self.id)
-        q = q1 & q2 & q3
-
-        return q.distinct().count()
+        q1 = Image.objects.filter(
+            Q(annotation__category_id=self.id) & 
+            Q(annotationboundingbox__category_id=self.id) &
+            Q(annotationsegmentation__category_id=self.id)
+        )
+        
+        return q1.count()
 
 
     def annotations_count(self):

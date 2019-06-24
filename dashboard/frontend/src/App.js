@@ -25,8 +25,8 @@ const App = () => (
         <Resource name="datasets" list={DatasetList} edit={DatasetEdit} create={DatasetCreate} icon={PostIcon} />
         <Resource name="categories" list={CategoryList} edit={CategoryEdit} create={CategoryCreate} icon={PostIcon} />
         <Resource name="images" list={ImageList} edit={ImageEdit} create={ImageCreate} icon={PostIcon} />
-        <Resource name="annotations" list={AnnotationList} edit={AnnotationEdit} create={AnnotationCreate} icon={PostIcon} />
         
+        <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
         <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />
         <Resource name="annotation-segmentations" edit={AnnotationSegmentationEdit} create={AnnotationSegmentationCreate} />
     </Admin>

@@ -13,3 +13,7 @@ class Dataset(models.Model):
 
     def __str__(self):
         return self.name
+
+
+    def images_count(self):
+        return self.image_set.count()

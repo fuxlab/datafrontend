@@ -8,7 +8,7 @@ class AnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         
         model = Annotation
-        fields = ( 'id', 'image', 'category', 'category_name', 'types', 'image_name' )
+        fields = ( 'id', 'image', 'category', 'category_name', 'image_name' )
 
 
 

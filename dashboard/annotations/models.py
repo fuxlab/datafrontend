@@ -23,16 +23,6 @@ class Annotation(models.Model):
         return self.image.name
 
 
-    def types(self):
-        # types should always be only one (!)
-        #types = []
-        #if self.annotationboundingbox_set.count() > 0:
-        #    types.append('BoundingBox')
-        #if self.annotationsegmentation_set.count() > 0:
-        #    types.append('Segmentation')
-        return 'none'
-
-
 class AnnotationBoundingbox(models.Model):
 
     x_min = models.FloatField(null=True)
