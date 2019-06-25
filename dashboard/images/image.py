@@ -4,11 +4,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from django.conf import settings
+import os
+from io import BytesIO
+
+from PIL import Image as PImage
+from PIL import ImageDraw
+import pycocotools.mask as mask
+import numpy as np
 
 from images.models import Image
-from PIL import Image as PImage
-from io import BytesIO
-import base64, os
 
 
 class PNGRenderer(renderers.BaseRenderer):
@@ -43,10 +47,56 @@ class ImagePreview(APIView):
         
         output = BytesIO()
         im = PImage.open(img_path)
-        im.thumbnail((200,200))
+        
+        image_type = self.request.query_params.get('type')
+        if image_type is not None:
+            if image_type == 'boundingbox':
+                im = self.draw_boundingbox(image, im)
+            if image_type == 'segmentation':
+                im = self.draw_segmentation(image)
+            im.thumbnail((800,600))
+        else:
+            im.thumbnail((200,200))
+        
         im.save(output, format='PNG')
         output.seek(0)
-        output_s = output.read()
-        b64 = base64.b64encode(output_s)
+        
+        return Response(output.read())
 
-        return Response(output_s)
+
+    def draw_boundingbox(self, image, im):
+        bounding_boxes = image.annotationboundingbox_set.all()
+
+        for bbox in bounding_boxes:
+            draw = ImageDraw.Draw(im)
+            draw.rectangle(((bbox.x_min*im.width, bbox.y_min*im.height), (bbox.x_max*im.width, bbox.y_max*im.height)), fill=None, outline='red', width=5)
+
+        return im
+
+
+    def draw_segmentation(self, image):
+        segmentations = image.annotationsegmentation_set.all()
+        img = False
+        for segmentation in segmentations:
+            
+            rle_struct = [
+                {
+                    'counts': segmentation.mask,
+                    'size': [ segmentation.height, segmentation.width ]
+                }
+            ]
+            
+            decoded_mask = mask.decode(rle_struct)
+            numpy_mask = np.squeeze(decoded_mask)
+
+            mask_image = PImage.fromarray(numpy_mask)
+            mat = np.reshape(mask_image,(segmentation.height, segmentation.width))
+
+            overlay = PImage.fromarray(np.uint8(mat * 255) , 'L')
+
+            if img:
+                img = PImage.blend(img, overlay, alpha=0.8)
+            else:
+                img = overlay
+            
+        return img

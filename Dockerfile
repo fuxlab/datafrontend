@@ -17,6 +17,9 @@ RUN mkdir /app
 WORKDIR /app
 ADD requirements.txt /app/
 
+RUN pip install --upgrade pip
+RUN pip install -U scikit-image
+RUN pip install -U cython
 RUN pip install --no-cache-dir -r requirements.txt
 
 WORKDIR /app

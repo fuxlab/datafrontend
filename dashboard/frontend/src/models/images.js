@@ -4,6 +4,7 @@ import { List, Datagrid, TextField, UrlField, EditButton } from 'react-admin';
 import { Edit, SimpleForm, TabbedForm, FormTab, ReferenceManyField, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 import ImageGrid from './../components/image_grid';
+import ImageDetail from './../components/image_detail';
 
 
 const annotationNameRenderer = choice => `${choice.name} (${choice.annotations_count})`;
@@ -53,6 +54,8 @@ export const ImageEdit = props => (
     <Edit {...props}>
         <TabbedForm>
             <FormTab label="summary">
+                <ImageDetail />
+                
                 <DisabledInput source="id" />
                 <ReferenceInput source="dataset" reference="datasets">
                     <SelectInput optionText="name" />
