@@ -53,7 +53,7 @@ class ImagePreview(APIView):
             if image_type == 'boundingbox':
                 im = self.draw_boundingbox(image, im)
             if image_type == 'segmentation':
-                im = self.draw_segmentation(image)
+                im = self.draw_segmentation(image, im)
             im.thumbnail((800,600))
         else:
             im.thumbnail((200,200))
@@ -74,8 +74,12 @@ class ImagePreview(APIView):
         return im
 
 
-    def draw_segmentation(self, image):
+    def draw_segmentation(self, image, im):
         segmentations = image.annotationsegmentation_set.all()
+        
+        if len(segmentations) == 0:
+            return im
+
         img = False
         for segmentation in segmentations:
             
