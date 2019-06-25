@@ -2,6 +2,8 @@ from rest_framework import permissions
 from dashboard.lib.api_base import DashboardApiBase
 from .models import Image
 from .serializers import ImageSerializer
+from django.db.models import Q
+
 
 class ImageViewSet(DashboardApiBase):
 
@@ -15,29 +17,29 @@ class ImageViewSet(DashboardApiBase):
         '''
         define queryset
         '''
-        queryset = Image.objects.all()
-        
+        q_objects = Q()
+
         filter_params = self.get_filter()
         if 'dataset' in filter_params:
-            q = Image.objects.filter(dataset=filter_params['dataset'])
-            queryset = queryset & q
+            q_objects.add(Q(dataset=filter_params['dataset']), Q.AND)
 
         if 'annotation' in filter_params:
-            q = Image.objects.filter(annotation__category=filter_params['annotation'])
-            queryset = queryset & q
+            q_objects.add(Q(annotation__category=filter_params['annotation']), Q.AND)
 
         if 'boundingbox' in filter_params:
-            q = Image.objects.filter(annotationboundingbox__category=filter_params['boundingbox'])
-            queryset = queryset & q
+            q_objects.add(Q(annotationboundingbox__category=filter_params['boundingbox']), Q.AND)
 
         if 'segmentation' in filter_params:
-            q = Image.objects.filter(annotationsegmentation__category=filter_params['segmentation'])
-            queryset = queryset & q
+            q_objects.add(Q(annotationsegmentation__category=filter_params['segmentation']), Q.AND)
 
         if 'q' in filter_params:
-            q1 = Image.objects.filter(name__contains=filter_params['q'])
-            q2 = Image.objects.filter(url__contains=filter_params['q'])
-            queryset = queryset & (q1 | q2)
-    
-        return queryset.distinct().order_by(self.get_sort())
+            q_objects.add((
+                Q(name__contains=filter_params['q']) | Q(url__contains=filter_params['q'])
+            ), Q.AND)
+            
+        if len(q_objects) > 0:
+            return Image.objects.filter(q_objects).distinct().order_by(self.get_sort())
+        else:
+            return Image.objects.filter(q_objects).order_by(self.get_sort())
+
 

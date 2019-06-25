@@ -28,7 +28,7 @@ const DefaultAppBar = withStyles(styles)(({ classes, ...props }) => (
             className={classes.title}
             id="react-admin-title"
         />
-        <span>DataFrontend</span>
+        <span>DATAFRONTEND</span>
         <span className={classes.spacer} />
     </AppBar>
 ));

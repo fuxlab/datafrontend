@@ -5,9 +5,6 @@ import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 import { Pagination } from 'react-admin';
 
-import AddAnnotationBoundingboxButton from './../components/add_annotation_boundingbox_button';
-import AddAnnotationSegmentationButton from './../components/add_annotation_segmentation_button';
-
 const AnnotationFilter = (props) => (
     <Filter {...props}>
         <ReferenceInput label="Category" source="category" reference="categories" allowEmpty>

@@ -2,6 +2,7 @@
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
 from dashboard.lib.pagination import Pagination
+from django.db.models import Q
 
 from .models import Project
 from .serializers import ProjectSerializer
@@ -17,12 +18,10 @@ class ProjectViewSet(DashboardApiBase):
         '''
         define queryset
         '''
-        queryset = Project.objects.all()
-        
+        qs = Q()     
         filter_params = self.get_filter()
 
         if 'q' in filter_params:
-            q1 = Project.objects.filter(name__contains=filter_params['q'])
-            queryset = queryset & q1
+            qs.add(Q(name__contains=filter_params['q']), Q.AND)
     
-        return queryset.order_by(self.get_sort())
+        return Project.objects.filter(qs).distinct().order_by(self.get_sort())

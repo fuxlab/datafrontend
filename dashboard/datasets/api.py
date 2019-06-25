@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions
 from dashboard.lib.api_base import DashboardApiBase
+from django.db.models import Q
 
 from .models import Dataset
 from .serializers import DatasetSerializer
@@ -16,15 +17,13 @@ class DatasetViewSet(DashboardApiBase):
         define queryset
         '''
         queryset = Dataset.objects.all()
+        qs = Q()
         
         filter_params = self.get_filter()
         if 'project' in filter_params:
-            q = Dataset.objects.filter(project=filter_params['project'])
-            queryset = queryset & q
+            qs.add(Q(project=filter_params['project']), Q.AND)
 
         if 'q' in filter_params:
-            q1 = Dataset.objects.filter(name__contains=filter_params['q'])
-            q2 = Dataset.objects.filter(identifier__contains=filter_params['q'])
-            queryset = queryset & (q1 | q2)
+            qs.add(Q(name__contains=filter_params['q']) | Q(identifier__contains=filter_params['q']), Q.AND)
     
-        return queryset.order_by(self.get_sort())
+        return Dataset.objects.filter(qs).distinct().order_by(self.get_sort())

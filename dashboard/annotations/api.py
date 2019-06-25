@@ -1,5 +1,7 @@
 from rest_framework import permissions
 from rest_framework.response import Response
+from django.db.models import Q
+
 from dashboard.lib.api_base import DashboardApiBase
 from .models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 from .serializers import AnnotationSerializer, AnnotationBoundingboxSerializer, AnnotationSegmentationSerializer
@@ -14,35 +16,19 @@ class AnnotationViewSet(DashboardApiBase):
 
 
     def get_queryset(self):
-        queryset = Annotation.objects.all()
-        
+        qs = Q()
         filter_params = self.get_filter()
-
+            
         if 'image' in filter_params:
-            q = Annotation.objects.filter(image=filter_params['image'])
-            queryset = queryset & q
+            qs.add(Q(image=filter_params['image']), Q.AND)
 
         if 'category' in filter_params:
-            q = Annotation.objects.filter(category=filter_params['category'])
-            queryset = queryset & q
+            qs.add(Q(category=filter_params['category']), Q.AND)
 
         if 'dataset' in filter_params:
-            q = Annotation.objects.filter(image__dataset=filter_params['dataset'])
-            queryset = queryset & q
+            qs.add(Q(image__dataset=filter_params['dataset']), Q.AND)
 
-
-        if 'type' in filter_params:
-            filter_types = filter_params['type'].split(',')
-            for filter_type in filter_types:
-                if filter_type == 'boundingbox':
-                    q = Annotation.objects.exclude(annotationboundingbox=None)
-                    queryset = queryset & q
-                elif filter_type == 'segmentation':
-                    q = Annotation.objects.exclude(annotationsegmentation=None)
-                    queryset = queryset & q
-
-    
-        return queryset.order_by(self.get_sort())
+        return Annotation.objects.filter(qs).distinct().order_by(self.get_sort())
 
 
 
@@ -55,16 +41,13 @@ class AnnotationBoundingboxViewSet(DashboardApiBase):
 
 
     def get_queryset(self):
-        queryset = AnnotationBoundingbox.objects.all()
-
+        qs = Q()
         filter_params = self.get_filter()
 
         if 'image' in filter_params:
-            q = AnnotationBoundingbox.objects.filter(image=filter_params['image'])
-            queryset = queryset & q
+            qs.add(Q(image=filter_params['image']), Q.AND)
 
-        return queryset.order_by(self.get_sort())
-
+        return AnnotationBoundingbox.objects.filter(qs).distinct().order_by(self.get_sort())
 
 
 class AnnotationSegmentationViewSet(DashboardApiBase):
@@ -76,15 +59,11 @@ class AnnotationSegmentationViewSet(DashboardApiBase):
 
     
     def get_queryset(self):
-        queryset = AnnotationSegmentation.objects.all()
-
+        qs = Q()
         filter_params = self.get_filter()
 
         if 'image' in filter_params:
+            qs.add(Q(image=filter_params['image']), Q.AND)
 
-            q = AnnotationSegmentation.objects.filter(image=filter_params['image'])
-            queryset = queryset & q
-
-
-        return queryset.order_by(self.get_sort())
+        return AnnotationSegmentation.objects.filter(qs).distinct().order_by(self.get_sort())
 
