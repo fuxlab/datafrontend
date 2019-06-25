@@ -1,8 +1,9 @@
 import React from 'react';
 import { Filter, ReferenceInput, SelectInput } from 'react-admin';
 import { List, Datagrid, TextField, EditButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, DisabledInput, ReferenceManyField } from 'react-admin';
-import { Create } from 'react-admin';
+import { Edit, TabbedForm, FormTab, TextInput, DisabledInput, ReferenceManyField } from 'react-admin';
+import { Create, SimpleForm } from 'react-admin';
+import LinkViewImagesByDataset from './../components/link_view_images_by_dataset';
 
 const DatasetFilter = (props) => (
     <Filter {...props}>
@@ -15,11 +16,12 @@ const DatasetFilter = (props) => (
 
 export const DatasetList = props => (
     <List filters={<DatasetFilter />} {...props}>
-        <Datagrid rowClick="edit">
+        <Datagrid>
             <TextField source="id" />
             <TextField source="identifier" />
             <TextField source="name" />
             <TextField source="images_count" />
+            <LinkViewImagesByDataset />
             <EditButton />
         </Datagrid>
     </List>
@@ -27,42 +29,45 @@ export const DatasetList = props => (
 
 export const DatasetEdit = props => (
     <Edit {...props}>
-        <SimpleForm>
-            <DisabledInput source="id" />
-            <ReferenceInput source="project_id" reference="projects">
-                <SelectInput optionText="name" />
-            </ReferenceInput>
-            <TextInput source="identifier" />
-            <TextInput source="name" />
+        <TabbedForm>
+            <FormTab label="Information">
+                <DisabledInput source="id" />
+                <ReferenceInput source="project_id" reference="projects">
+                    <SelectInput optionText="name" />
+                </ReferenceInput>
+                <TextInput source="identifier" />
+                <TextInput source="name" />
+            </FormTab>
 
-            <ReferenceManyField reference="categories" target="dataset_annotation" addLabel={false}>
-                <Datagrid>
-                    <TextField source="id" />
-                    <TextField source="name" />
-                    <TextField source="annotations_count" />
-                    <EditButton />
-                </Datagrid>
-            </ReferenceManyField>
+            <FormTab label="Content">
+                <ReferenceManyField reference="categories" target="dataset_annotation" addLabel={false}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="name" />
+                        <TextField source="annotations_count" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
 
-            <ReferenceManyField reference="categories" target="dataset_boundingbox" addLabel={false}>
-                <Datagrid>
-                    <TextField source="id" />
-                    <TextField source="name" />
-                    <TextField source="boundingboxes_count" />
-                    <EditButton />
-                </Datagrid>
-            </ReferenceManyField>
+                <ReferenceManyField reference="categories" target="dataset_boundingbox" addLabel={false}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="name" />
+                        <TextField source="boundingboxes_count" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
 
-            <ReferenceManyField reference="categories" target="dataset_segmentation" addLabel={false}>
-                <Datagrid>
-                    <TextField source="id" />
-                    <TextField source="name" />
-                    <TextField source="segmentations_count" />
-                    <EditButton />
-                </Datagrid>
-            </ReferenceManyField>
-
-        </SimpleForm>
+                <ReferenceManyField reference="categories" target="dataset_segmentation" addLabel={false}>
+                    <Datagrid>
+                        <TextField source="id" />
+                        <TextField source="name" />
+                        <TextField source="segmentations_count" />
+                        <EditButton />
+                    </Datagrid>
+                </ReferenceManyField>
+            </FormTab>
+        </TabbedForm>
     </Edit>
 );
 
