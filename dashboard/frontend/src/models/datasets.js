@@ -20,7 +20,7 @@ export const DatasetList = props => (
             <TextField source="id" />
             <TextField source="identifier" />
             <TextField source="name" />
-            <TextField source="images_count" />
+            <TextField source="images_count" sortable={false} />
             <LinkViewImagesByDataset />
             <EditButton />
         </Datagrid>

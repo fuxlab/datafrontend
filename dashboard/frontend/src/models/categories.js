@@ -3,6 +3,8 @@ import { Filter, ReferenceInput, SelectInput } from 'react-admin';
 import { List, Datagrid, TextField, EditButton } from 'react-admin';
 import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
+import LinkViewImagesByCategoryType from './../components/link_view_images_by_category_type';
+
 
 const CategoryFilter = (props) => (
     <Filter {...props}>
@@ -15,12 +17,15 @@ const CategoryFilter = (props) => (
 
 export const CategoryList = props => (
     <List filters={<CategoryFilter />} {...props}>
-        <Datagrid rowClick="edit">
+        <Datagrid>
             <TextField source="id" />
             <TextField source="name" />
-            <TextField source="annotations_count" />
-            <TextField source="boundingboxes_count" />
-            <TextField source="segmentations_count" />
+            <TextField label="Annotation" source="annotations_count" sortable={false} />
+            <LinkViewImagesByCategoryType type="annotation"/>
+            <TextField label="Boundingbox" source="boundingboxes_count" sortable={false} />
+            <LinkViewImagesByCategoryType type="boundingbox" />
+            <TextField label="Segmentation" source="segmentations_count" sortable={false} />
+            <LinkViewImagesByCategoryType type="segmentation" />
             <EditButton />
         </Datagrid>
     </List>
