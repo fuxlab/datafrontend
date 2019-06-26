@@ -4,7 +4,7 @@ import { List, Datagrid, TextField, EditButton } from 'react-admin';
 import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 import LinkViewImagesByCategoryType from './../components/link_view_images_by_category_type';
-
+import ListFilterQuick from './../components/list_filter_quick';
 
 const CategoryFilter = (props) => (
     <Filter {...props}>
@@ -12,6 +12,21 @@ const CategoryFilter = (props) => (
         <ReferenceInput label="Project" source="project" reference="projects" allowEmpty>
             <SelectInput optionText="name" />
         </ReferenceInput>
+        <ListFilterQuick
+            label="Has Annotation"
+            source="annotation_exists"
+            defaultValue={true}
+        />
+        <ListFilterQuick
+            label="Has Boundingbox"
+            source="boundingbox_exists"
+            defaultValue={true}  
+        />
+        <ListFilterQuick
+            label="Has Segmentation"
+            source="segmentation_exists"
+            defaultValue={true}
+        />
     </Filter>
 );
 
