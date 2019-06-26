@@ -27,15 +27,33 @@ class CategoryViewSet(DashboardApiBase):
 
         if 'dataset_annotation' in filter_params:
             qs.add((
-                Q(annotationboundingbox__image__dataset_id=filter_params['dataset_annotation'])
+                Q(annotation__image__dataset_id=filter_params['dataset_annotation'])
             ), Q.AND)
+
         if 'dataset_boundingbox' in filter_params:
             qs.add((
                 Q(annotationboundingbox__image__dataset_id=filter_params['dataset_boundingbox'])
             ), Q.AND)
+
         if 'dataset_segmentation' in filter_params:
             qs.add((
                 Q(annotationsegmentation__image__dataset_id=filter_params['dataset_segmentation'])
+            ), Q.AND)
+
+
+        if 'annotation_exists' in filter_params:
+            qs.add((
+                Q(annotation__isnull=False)
+            ), Q.AND)
+
+        if 'boundingbox_exists' in filter_params:
+            qs.add((
+                Q(annotationboundingbox__isnull=False)
+            ), Q.AND)
+
+        if 'segmentation_exists' in filter_params:
+            qs.add((
+                Q(annotationsegmentation__isnull=False)
             ), Q.AND)
 
     

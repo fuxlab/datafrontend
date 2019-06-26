@@ -22,6 +22,7 @@ const ImageFilter = (props) => (
             source="annotation"
             reference="categories"
             sort={{ field: 'name', order: 'ASC' }}
+            filter={{ annotation_exists: true }}
             allowEmpty perPage={1000}>
             <SelectInput optionText={annotationNameRenderer} />
         </ReferenceInput>
@@ -29,6 +30,7 @@ const ImageFilter = (props) => (
             label="Boundingbox"
             source="boundingbox"
             reference="categories"
+            filter={{ boundingbox_exists: true }}
             sort={{ field: 'name', order: 'ASC' }}
             allowEmpty perPage={1000}>
             <SelectInput optionText={boundingboxNameRenderer} />
@@ -37,6 +39,7 @@ const ImageFilter = (props) => (
             label="Segmentation"
             source="segmentation"
             reference="categories"
+            filter={{ segmentation_exists: true }}
             sort={{ field: 'name', order: 'ASC' }}
             allowEmpty perPage={1000}>
             <SelectInput optionText={segmentationNameRenderer} />
