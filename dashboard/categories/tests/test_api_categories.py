@@ -5,6 +5,9 @@ from urllib.parse import urlencode
 
 from categories.models import Category
 from projects.models import Project
+from datasets.models import Dataset
+from images.models import Image
+from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
 class TestApiCategories(TestCase):
 
@@ -31,12 +34,53 @@ class TestApiCategories(TestCase):
 
     def test_index_filter(self):
         self.create_multi()
-
         query_string = urlencode({ 'filter' : {'project': self.project.id} })
         response = self.client.get('/api/categories/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual([e['id'] for e in response.data], [self.category.id, self.category2.id])
+
+
+    def test_index_filter_annotation_exists(self):
+        self.create_multi()
+        
+        dataset = Dataset.objects.create(name='name1', project=self.project)
+        image = Image.objects.create(name='name1', url='url1', dataset=dataset)
+        Annotation.objects.create(category=self.category2, image=image)
+
+        query_string = urlencode({ 'filter' : {'annotation_exists': 'true'} })
+        response = self.client.get('/api/categories/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.category2.id])
+
+
+    def test_index_filter_annotation_boundingbox_exists(self):
+        self.create_multi()
+        
+        dataset = Dataset.objects.create(name='name1', project=self.project)
+        image = Image.objects.create(name='name1', url='url1', dataset=dataset)
+        AnnotationBoundingbox.objects.create(category=self.category3, image=image)
+
+        query_string = urlencode({ 'filter' : {'boundingbox_exists': 'true'} })
+        response = self.client.get('/api/categories/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.category3.id])
+
+
+    def test_index_filter_annotation_segmentation_exists(self):
+        self.create_multi()
+        
+        dataset = Dataset.objects.create(name='name1', project=self.project)
+        image = Image.objects.create(name='name1', url='url1', dataset=dataset)
+        AnnotationSegmentation.objects.create(category=self.category4, image=image)
+
+        query_string = urlencode({ 'filter' : {'segmentation_exists': 'true'} })
+        response = self.client.get('/api/categories/?' + query_string)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([e['id'] for e in response.data], [self.category4.id])
 
 
     def test_index_sort_asc(self):
