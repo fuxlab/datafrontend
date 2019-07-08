@@ -10,7 +10,7 @@ from datasets.models import Dataset
 
 from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
-class TestImages(TestCase):
+class TestImagesApi(TestCase):
 
 
     def setUp(self):

@@ -1,10 +1,12 @@
 from rest_framework import permissions
 from rest_framework import renderers
-from rest_framework.views import APIView
+from rest_framework import viewsets
+
+from django.http import HttpResponse
 from rest_framework.response import Response
 
 from django.conf import settings
-import os
+import os, math
 from io import BytesIO
 
 from PIL import Image as PImage
@@ -13,6 +15,7 @@ import pycocotools.mask as mask
 import numpy as np
 
 from images.models import Image
+from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
 
 class PNGRenderer(renderers.BaseRenderer):
@@ -26,7 +29,7 @@ class PNGRenderer(renderers.BaseRenderer):
         return image_data
 
 
-class ImagePreview(APIView):
+class ImageRenderer(viewsets.ModelViewSet):
     
     permission_classes = [
         permissions.AllowAny
@@ -34,7 +37,8 @@ class ImagePreview(APIView):
 
     renderer_classes = (PNGRenderer, )
 
-    def get(self, request, format=None, image_id=None):
+
+    def preview(self, request, format=None, image_id=None):
         try:
             image = Image.objects.get(id=image_id)
         except:
@@ -51,9 +55,9 @@ class ImagePreview(APIView):
         image_type = self.request.query_params.get('type')
         if image_type is not None:
             if image_type == 'boundingbox':
-                im = self.draw_boundingbox(image, im)
+                im = ImageRenderer.draw_boundingbox(image, im)
             if image_type == 'segmentation':
-                im = self.draw_segmentation(image, im)
+                im = ImageRenderer.draw_segmentation(image, im)
             im.thumbnail((800,600))
         else:
             im.thumbnail((200,200))
@@ -64,21 +68,167 @@ class ImagePreview(APIView):
         return Response(output.read())
 
 
-    def draw_boundingbox(self, image, im):
+    def original(self, request, format=None, id=None):
+        '''
+        endpoint to render original image
+        '''
+        img = ImageRenderer.get_image(id)
+
+        output = BytesIO()
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read())
+
+
+    def get_image(image_id):
+        '''
+        return pil image object by image_id
+        '''
+        image = Image.objects.get(id=image_id)
+        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
+        return img
+
+
+    def get_annotation(annotation_id):
+        '''
+        return pil image object by annotation_id
+        '''
+        an = Annotation.objects.get(id=annotation_id)
+        return ImageRenderer.get_image(an.image.id)
+
+
+    def get_boundingbox_crop(annotation_boundingbox_id):
+        '''
+        return pil image object by annotation_boundingbox_id
+        '''
+        bb = AnnotationBoundingbox.objects.get(id=annotation_boundingbox_id)
+        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], bb.image.path))
+        img = img.crop((bb.x_min*img.width, bb.y_min*img.height, bb.x_max*img.width, bb.y_max*img.height))
+        return img
+
+
+    def get_segmentation_crop(annotation_segmentation_id):
+        '''
+        return pil image object by annotation_segmentation_id
+        '''
+        sg = AnnotationSegmentation.objects.get(id=annotation_segmentation_id)
+
+
+        rle_struct = [
+            {
+                'counts': sg.mask,
+                'size': [ sg.height, sg.width ]
+            }
+        ]
+        
+        decoded_mask = mask.decode(rle_struct)
+        numpy_mask = np.squeeze(decoded_mask)
+
+        mask_image = PImage.fromarray(numpy_mask)
+        mat = np.reshape(mask_image,(sg.height, sg.width))
+
+        overlay = PImage.fromarray(np.uint8(mat * 255) , 'L')
+
+        return overlay
+
+
+    def boundingbox_crop(self, request, format=None, id=None):
+        '''
+        endpoint for displaying and downloading the boundingbox-crop in original size
+        '''
+        output = BytesIO()
+        img = ImageRenderer.get_boundingbox_crop(id)
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read())
+
+
+    def segmentation_crop(self, request, format=None, id=None):
+        '''
+        endpoint for displaying and downloading the segmentation as an image in original size
+        '''
+        output = BytesIO()
+        img = ImageRenderer.get_segmentation_crop(id)
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read())
+
+
+    def plot(self, request, format=None):
+        '''
+        plot preview of seleted types of images
+        '''
+        output = BytesIO()
+        if 'ids' not in request.query_params:
+            return HttpResponse('false')
+
+        image_type = request.query_params.get('type', 'all')
+        ids = request.query_params.get('ids').split(',')
+
+        height = 200
+        width = 200
+        padding = 30
+        background_color = (255,255,255,0)
+
+        imgs = []
+        for uid in ids:
+            type_id = uid.split('-')[-1]
+            if image_type == 'boundingbox':
+                img = ImageRenderer.get_boundingbox_crop(type_id)
+            elif image_type == 'segmentation':
+                background_color = (0,0,0,0)
+                img = ImageRenderer.get_segmentation_crop(type_id)
+            else:
+                img = ImageRenderer.get_annotation(type_id)
+            
+            if img:
+                img.thumbnail((width,height))
+                imgs.append(img)
+
+        widths, heights = zip(*(i.size for i in imgs))
+
+        
+        total_width = sum(widths) + (len(widths)-1)*padding
+        max_height = max(heights)
+
+        new_im = PImage.new('RGB', (total_width, max_height), color=background_color)
+
+        x_offset = 0
+        for im in imgs:
+            y_offset = math.floor((height - im.height)/2)
+            new_im.paste(im, (x_offset,y_offset))
+            x_offset += im.size[0] + padding
+
+        new_im.save(output, format='PNG')
+        output.seek(0)
+        return Response(output.read())
+
+
+    def draw_boundingbox(image, img):
+        '''
+        draw boundingboxes from image on img image-canvas
+        '''
+
         bounding_boxes = image.annotationboundingbox_set.all()
 
         for bbox in bounding_boxes:
-            draw = ImageDraw.Draw(im)
-            draw.rectangle(((bbox.x_min*im.width, bbox.y_min*im.height), (bbox.x_max*im.width, bbox.y_max*im.height)), fill=None, outline='red', width=5)
+            draw = ImageDraw.Draw(img)
+            draw.rectangle(((bbox.x_min*img.width, bbox.y_min*img.height), (bbox.x_max*img.width, bbox.y_max*img.height)), fill=None, outline='red', width=5)
 
-        return im
+        return img
 
 
-    def draw_segmentation(self, image, im):
+    def draw_segmentation(image, img):
+        '''
+        draw segmentation from image
+        '''
         segmentations = image.annotationsegmentation_set.all()
         
         if len(segmentations) == 0:
-            return im
+            return img
 
         img = False
         for segmentation in segmentations:

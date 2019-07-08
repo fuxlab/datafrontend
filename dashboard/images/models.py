@@ -17,8 +17,19 @@ class Image(models.Model):
     def __str__(self):
         return self.name
 
+    def line(self):
+        '''
+        return one line with basic information for csv export purposes
+        '''
+        #if self.type is 'image':
+        #return [ self.image(), 0, 0, self.uid, self.dataset_id ]
+        print(self)
+        return [ self.id ]
+
+    
     def image(self):
         return '/api/image/%s.png' % (self.id)
+
 
     def types(self):
         

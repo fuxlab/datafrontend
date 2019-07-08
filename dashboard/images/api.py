@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from dashboard.lib.api_base import DashboardApiBase
 from .models import Image
-from .serializers import ImageSerializer
+from images.serializers.image import ImageSerializer
 from django.db.models import Q
 
 
@@ -41,5 +41,4 @@ class ImageViewSet(DashboardApiBase):
             return Image.objects.filter(q_objects).distinct().order_by(self.get_sort())
         else:
             return Image.objects.filter(q_objects).order_by(self.get_sort())
-
 

@@ -46,5 +46,4 @@ const LinkViewImagesByCategoryType = withStyles(styles)(({ classes, record, ...p
   );
 });
 
-//export default withStyles(styles)(LinkViewImagesByCategoryType);
 export default LinkViewImagesByCategoryType;

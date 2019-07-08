@@ -2,13 +2,22 @@ from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
 
+from .export import ImageExport
 from .api import ImageViewSet
-from .image import ImagePreview
+from .image import ImageRenderer
+
 
 router = routers.DefaultRouter()
 router.register('images', ImageViewSet, basename='images')
 
 urlpatterns = [
+    path('images/export/', ImageExport.as_view({'get': 'list'})),
+    path('images/export.zip', ImageExport.as_view({'get': 'download'})),
+    
     url("^", include(router.urls)),
-    path('image/<int:image_id>.png', ImagePreview.as_view())
+    path('image/boundingbox_crop/<int:id>.png', ImageRenderer.as_view({'get': 'boundingbox_crop'})),
+    path('image/segmentation_crop/<int:id>.png', ImageRenderer.as_view({'get': 'segmentation_crop'})),
+    path('image/original/<int:id>.png', ImageRenderer.as_view({'get': 'original'})),
+    path('image/plot.png', ImageRenderer.as_view({'get': 'plot'})),
+    path('image/<int:image_id>.png', ImageRenderer.as_view({'get': 'preview'})),
 ]

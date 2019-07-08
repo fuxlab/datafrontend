@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { Button } from 'react-admin';
 import { stringify } from 'query-string';
 
-
 const styles = {
   link: {
     

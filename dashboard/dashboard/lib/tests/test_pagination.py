@@ -105,3 +105,13 @@ class TestPagination(TestCase):
         self.assertEqual(response.data[0]['name'], self.project.name)
 
 
+    def test_index_max_filter(self):
+        self.create_multi()
+
+        query_string = urlencode({ 'filter' : { 'max': 2 } })
+        response = self.client.get('/api/projects/?' + query_string)
+
+        self.assertEqual(response.get('Content-Range'), '0-1/4')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)

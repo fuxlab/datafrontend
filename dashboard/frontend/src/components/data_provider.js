@@ -101,9 +101,19 @@ const convertHTTPResponseToDataProvider = (response, type, resource, params) => 
     const { headers, json } = response;
     switch (type) {
     case GET_LIST:
+        var mapped_data = [];
+        var total = 0;
+
+        if(json.length > 0) {
+            mapped_data = json.map(x => x);
+        }
+        if(headers.get('content-range')){
+            total = parseInt(headers.get('content-range').split('/').pop(), 10);
+        }
+        
         return {
-            data: json.map(x => x),
-            total: parseInt(headers.get('content-range').split('/').pop(), 10),
+            data: mapped_data,
+            total: total,
         };
     case CREATE:
         return { data: { ...params.data, id: json.id } };
