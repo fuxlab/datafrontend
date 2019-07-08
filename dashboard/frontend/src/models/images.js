@@ -47,8 +47,57 @@ const ImageFilter = (props) => (
     </Filter>
 );
 
+
+import Button from '@material-ui/core/Button';
+import { CardActions, CreateButton } from 'react-admin';
+import { Link } from 'react-router-dom';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+
+const ImagesListActions = ({
+    basePath,
+    currentSort,
+    displayedFilters,
+    exporter,
+    filters,
+    filterValues,
+    onUnselectItems,
+    resource,
+    selectedIds,
+    showFilter,
+    total
+}) => (
+    <CardActions>
+        {filters && React.cloneElement(filters, {
+            resource,
+            showFilter,
+            displayedFilters,
+            filterValues,
+            context: 'button',
+        }) }
+        <CreateButton basePath={basePath} />
+        {/* Add your custom actions */}
+        <Button
+            color="primary"
+            component={Link}
+            to={{
+              pathname: '/images/export'
+            }}
+            label="Export"
+            title="Export Images"
+        >
+            <CloudDownloadIcon />
+        </Button>
+    </CardActions>
+);
+
+
 export const ImageList = props => (
-    <List filters={<ImageFilter />} {...props}>
+    <List
+        filters={<ImageFilter />}
+        actions={<ImagesListActions />}
+        exporter={false}
+        {...props}
+    >
         <ImageGrid />
     </List>
 );

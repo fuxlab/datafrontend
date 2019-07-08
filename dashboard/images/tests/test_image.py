@@ -7,7 +7,7 @@ from projects.models import Project
 from images.models import Image
 from datasets.models import Dataset
 
-class TestImagePreview(TestCase):
+class TestImages(TestCase):
 
 
     def setUp(self):
