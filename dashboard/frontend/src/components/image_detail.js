@@ -49,10 +49,10 @@ class ImageDetail extends Component {
     render() {
         const { classes, record } = this.props;
         const { imageSize } = this.state;
-              
+        const imageUrl = record.preview + '?type=' + imageSize
         return(
             <Card className={classes.card}>
-                <CardMedia image={record.image + '?type=' + imageSize} className={classes.media} />
+                <CardMedia image={imageUrl} className={classes.media} />
                 <CardActions style={{ justifyContent: 'flex-end' }}>
                     <Button onClick={this.displayOriginal}>
                         <RestoreIcon style={{ paddingRight: '0.5em' }} />

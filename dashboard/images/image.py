@@ -38,33 +38,35 @@ class ImageRenderer(viewsets.ModelViewSet):
     renderer_classes = (PNGRenderer, )
 
 
-    def preview(self, request, format=None, image_id=None):
-        try:
-            image = Image.objects.get(id=image_id)
-        except:
-            image = False
-        
-        if image and image.path is not None and len(image.path) > 0:
-            img_path = os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)
-        else:
-            img_path = 'images/data/empty.png'
-        
+
+    def thumbnail(self, request, format=None, id=None):
+        (image, img) = ImageRenderer.get_image(id)
         output = BytesIO()
-        im = PImage.open(img_path)
+        img.thumbnail((200,200))
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read())
+
+
+    def preview(self, request, format=None, id=None):
+        '''
+        endpoint for image preview with maximum 800x600 size
+        optional with boundingboxes, and segmentation overlay
+        '''
+        (image, img) = ImageRenderer.get_image(id)
+        output = BytesIO()
         
         image_type = self.request.query_params.get('type')
         if image_type is not None:
             if image_type == 'boundingbox':
-                im = ImageRenderer.draw_boundingbox(image, im)
+                img = ImageRenderer.draw_boundingbox(image, img)
             if image_type == 'segmentation':
-                im = ImageRenderer.draw_segmentation(image, im)
-            im.thumbnail((800,600))
-        else:
-            im.thumbnail((200,200))
+                img = ImageRenderer.draw_segmentation(image, img)
         
-        im.save(output, format='PNG')
+        img.thumbnail((800,600))
+        img.save(output, format='PNG')
         output.seek(0)
-        
         return Response(output.read())
 
 
@@ -72,7 +74,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         endpoint to render original image
         '''
-        img = ImageRenderer.get_image(id)
+        (image, img) = ImageRenderer.get_image(id)
 
         output = BytesIO()
         img.save(output, format='PNG')
@@ -87,7 +89,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         image = Image.objects.get(id=image_id)
         img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
-        return img
+        return (image, img)
 
 
     def get_annotation(annotation_id):
@@ -95,7 +97,8 @@ class ImageRenderer(viewsets.ModelViewSet):
         return pil image object by annotation_id
         '''
         an = Annotation.objects.get(id=annotation_id)
-        return ImageRenderer.get_image(an.image.id)
+        (image, img) = ImageRenderer.get_image(an.image.id)
+        return img
 
 
     def get_boundingbox_crop(annotation_boundingbox_id):

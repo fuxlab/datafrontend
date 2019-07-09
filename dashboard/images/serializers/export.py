@@ -7,7 +7,8 @@ class ExportSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
-
+    image = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         '''
@@ -17,50 +18,52 @@ class ExportSerializer(serializers.ModelSerializer):
         kwargs.pop('filter_params', None)
         super(ExportSerializer, self).__init__(*args, **kwargs)
 
-
     def queryset_fields(filter_params):
         '''
         mapping for query resultset
         '''
+        fields = [ 'id' ]
         if 'category' in filter_params:
-            return [
-                'id',
-                'annotation__id',
-                'annotationboundingbox__id',
-                'annotationsegmentation__id',
-                'annotation__category_id',
-                'annotationboundingbox__category_id',
-                'annotationsegmentation__category_id',
-                
-                'annotationboundingbox__x_min',
-                'annotationboundingbox__x_max',
-                'annotationboundingbox__y_min',
-                'annotationboundingbox__y_max',
+            filter_type = filter_params['type'] if 'type' in filter_params else 'all'
 
-                'annotationsegmentation__mask',
-            ]
+            if filter_type == 'all':
+                fields.append('annotation__id')
+                fields.append('annotation__category_id')
+            
+            if filter_type == 'boundingbox':
+                fields.append('annotationboundingbox__id')
+                fields.append('annotationboundingbox__category_id')
+                fields.append('annotationboundingbox__x_min')
+                fields.append('annotationboundingbox__x_max')
+                fields.append('annotationboundingbox__y_min')
+                fields.append('annotationboundingbox__y_max')
+            
+            if filter_type == 'segmentation':
+                fields.append('annotationsegmentation__id')
+                fields.append('annotationsegmentation__category_id')
+                fields.append('annotationsegmentation__mask')
+            
+            if filter_type == 'annotation':
+                fields.append('annotation__id')
+                fields.append('annotation__category_id')
         else:
-            return [
-                'id',
-                'dataset_id' 
-            ]
+            fields.append('dataset_id')
 
+        return fields
 
     def get_url(self, obj):
         '''
         return path of relevant image
         '''
-        queryset_fields = ExportSerializer.queryset_fields(self.filter_params)
-        
         if 'category' in self.filter_params:
-            if obj[queryset_fields.index('annotationboundingbox__id')] is not None:
-                return '/api/image/boundingbox_crop/%s.png' % (obj[queryset_fields.index('annotationboundingbox__id')])
-            elif obj[queryset_fields.index('annotationsegmentation__id')] is not None:
-                return '/api/image/segmentation_crop/%s.png' % (obj[queryset_fields.index('annotationsegmentation__id')])
+            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
+                return '/api/image/boundingbox_crop/%s.png' % (obj['annotationboundingbox__id'])
+            elif 'annotationsegmentation__id' in obj and obj['annotationsegmentation__id'] is not None:
+                return '/api/image/segmentation_crop/%s.png' % (obj['annotationsegmentation__id'])
             else:
-                return '/api/image/%s.png' % (obj[queryset_fields.index('id')])
+                return '/api/image/%s.png' % (obj['id'])
 
-        return '/api/image/%s.png' % (obj[queryset_fields.index('id')])
+        return '/api/image/%s.png' % (obj['id'])
 
 
     def get_id(self, obj):
@@ -68,16 +71,16 @@ class ExportSerializer(serializers.ModelSerializer):
         get an unique id to display. due to we have multiple models, and potentially overlapping ids
         we need to calculate a new unique one
         '''
-        queryset_fields = ExportSerializer.queryset_fields(self.filter_params)
+        id_parts = [ str(obj['id']) ]
         if 'category' in self.filter_params:
-            if obj[queryset_fields.index('annotationboundingbox__id')] is not None:
-                return '%s-%s' % (obj[queryset_fields.index('id')], obj[queryset_fields.index('annotationboundingbox__id')])
-            elif obj[queryset_fields.index('annotationsegmentation__id')] is not None:
-                return '%s-%s' % (obj[queryset_fields.index('id')], obj[queryset_fields.index('annotationsegmentation__id')])
-            else:
-                return '%s-%s' % (obj[queryset_fields.index('id')], obj[queryset_fields.index('annotation__id')])
-        
-        return obj[queryset_fields.index('id')]
+            if 'annotation__id' in obj and obj['annotation__id'] is not None:
+                id_parts.append(str(obj['annotation__id']))
+            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
+                id_parts.append(str(obj['annotationboundingbox__id']))
+            if 'annotationsegmentation__id' in obj and obj['annotationsegmentation__id'] is not None:
+                id_parts.append(str(obj['annotationsegmentation__id']))
+
+        return str('-'.join(id_parts))
 
 
     def get_type(self, obj):
@@ -86,9 +89,9 @@ class ExportSerializer(serializers.ModelSerializer):
         '''
         if 'category' in self.filter_params:
             queryset_fields = ExportSerializer.queryset_fields(self.filter_params)
-            if obj[queryset_fields.index('annotationboundingbox__id')] is not None:
+            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
                 return 'boundingbox'
-            elif obj[queryset_fields.index('annotationsegmentation__id')] is not None:
+            elif 'annotationsegmentation__id' in obj and  obj['annotationsegmentation__id'] is not None:
                 return 'segmentation'
             else:
                 return 'annotation'
@@ -96,9 +99,31 @@ class ExportSerializer(serializers.ModelSerializer):
         return 'image'
 
 
+    def get_image(self, obj):
+        '''
+        get original image source path
+        '''
+        return '/api/image/%s.png' % (obj['id'])
+
+
+    def get_category(self, obj):
+        '''
+        get class for type
+        '''
+        if 'category' in self.filter_params:
+            if 'annotation__category_id' in obj and obj['annotation__category_id'] is not None:
+                return obj['annotation__category_id']
+            if 'annotationboundingbox__category_id' in obj and obj['annotationboundingbox__category_id'] is not None:
+                return obj['annotationboundingbox__category_id']
+            if 'annotationsegmentation__category_id' in obj and obj['annotationsegmentation__category_id'] is not None:
+                return obj['annotationsegmentation__category_id']
+        elif 'dataset_id' in obj and obj['dataset_id'] is not None:                
+            return obj['dataset_id']
+        return 0
+        
     class Meta:
         '''
         data returned with json-api
         '''
         model = Image
-        fields = [ 'id', 'type', 'url' ]
+        fields = [ 'id', 'type', 'url', 'image', 'category' ]

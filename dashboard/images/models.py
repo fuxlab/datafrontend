@@ -28,7 +28,24 @@ class Image(models.Model):
 
     
     def image(self):
+        '''
+        return path to image in full size
+        '''
         return '/api/image/%s.png' % (self.id)
+
+
+    def preview(self):
+        '''
+        return path to image in preview, thumbnail size
+        '''
+        return '/api/image/preview/%s.png' % (self.id)        
+
+
+    def thumbnail(self):
+        '''
+        return path to image in preview, thumbnail size
+        '''
+        return '/api/image/thumbnail/%s.png' % (self.id) 
 
 
     def types(self):

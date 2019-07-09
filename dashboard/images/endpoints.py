@@ -17,7 +17,8 @@ urlpatterns = [
     url("^", include(router.urls)),
     path('image/boundingbox_crop/<int:id>.png', ImageRenderer.as_view({'get': 'boundingbox_crop'})),
     path('image/segmentation_crop/<int:id>.png', ImageRenderer.as_view({'get': 'segmentation_crop'})),
-    path('image/original/<int:id>.png', ImageRenderer.as_view({'get': 'original'})),
     path('image/plot.png', ImageRenderer.as_view({'get': 'plot'})),
-    path('image/<int:image_id>.png', ImageRenderer.as_view({'get': 'preview'})),
+    path('image/thumbnail/<int:id>.png', ImageRenderer.as_view({'get': 'thumbnail'})),
+    path('image/preview/<int:id>.png', ImageRenderer.as_view({'get': 'preview'})),
+    path('image/<int:id>.png', ImageRenderer.as_view({'get': 'original'})),
 ]
