@@ -18,6 +18,7 @@ urlpatterns = [
     path('image/boundingbox_crop/<int:id>.png', ImageRenderer.as_view({'get': 'boundingbox_crop'})),
     path('image/segmentation_crop/<int:id>.png', ImageRenderer.as_view({'get': 'segmentation_crop'})),
     path('image/plot.png', ImageRenderer.as_view({'get': 'plot'})),
+    path('image/thumbnail/<int:id>.png', ImageRenderer.as_view({'get': 'thumbnail'})),
     path('image/preview/<int:id>.png', ImageRenderer.as_view({'get': 'preview'})),
     path('image/<int:id>.png', ImageRenderer.as_view({'get': 'original'})),
 ]
