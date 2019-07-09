@@ -38,9 +38,9 @@ class ImageRenderer(viewsets.ModelViewSet):
     renderer_classes = (PNGRenderer, )
 
 
-    def preview(self, request, format=None, image_id=None):
+    def preview(self, request, format=None, id=None):
         try:
-            image = Image.objects.get(id=image_id)
+            image = Image.objects.get(id=id)
         except:
             image = False
         

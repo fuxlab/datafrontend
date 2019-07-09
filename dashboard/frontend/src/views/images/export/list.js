@@ -34,13 +34,13 @@ export const ExportList = withStyles(ExportListStyles)(({ classes, ...props }) =
                 expand={<ImagesExportListPreview />}
             >
                 <TextField
-                    source="type"
-                    label="Type"
+                    source="id"
+                    label="UID"
                     sortable={false}
                 />
                 <TextField
-                    source="id"
-                    label="UID"
+                    source="type"
+                    label="Type"
                     sortable={false}
                 />
                 <TextField

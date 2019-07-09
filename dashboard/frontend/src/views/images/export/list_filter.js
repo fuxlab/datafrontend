@@ -57,6 +57,7 @@ const ImagesExportListFilter = withStyles(ImagesExportListFilterStyles)(({ class
                 label="Type"
                 choices={[
                     { id: 'all', name: 'All Images' },
+                    { id: 'annotation', name: 'Only Annotation' },
                     { id: 'boundingbox', name: 'Only Boundingbox' },
                     { id: 'segmentation', name: 'Only Segmentations' },
                 ]}

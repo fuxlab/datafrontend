@@ -54,7 +54,7 @@ const ImageGrid = ({ ids, data, basePath }) => (
                 component="img"
                 alt={data[id].name}
                 title={data[id].name}
-                image={data[id].image}
+                image={data[id].preview}
                 basePath={basePath}
                 record={data[id]}
               />
