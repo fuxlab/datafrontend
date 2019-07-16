@@ -87,8 +87,18 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         return pil image object by image_id
         '''
-        image = Image.objects.get(id=image_id)
-        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
+        
+        try:
+            image = Image.objects.get(id=image_id)
+        except:
+            image = False
+
+        img_path = 'images/data/empty.png'
+        if image and image.path is not None and len(image.path) > 0:
+            if os.path.exists(img_path):
+                img_path = os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)
+        
+        img = PImage.open(os.path.join(img_path))
         return (image, img)
 
 

@@ -18,6 +18,7 @@ from images.serializers.export import ExportSerializer
 
 import csv, io
 import zipfile, json
+import random
 
 class ImageExport(DashboardApiBase):
 
@@ -117,34 +118,70 @@ class ImageExport(DashboardApiBase):
         return 'id'
 
 
-
     def queryset(self, filter_params):
         '''
         queryset based on filter params
         '''
-        
         q_objects = self.apply_filter(filter_params)
         
         if len(q_objects) == 0:
             return []
 
         q = Image.objects.filter(q_objects).values(
-            *ExportSerializer.queryset_fields(filter_params)
+            *self.queryset_fields(filter_params)
         ).annotate(
             pks=ArrayAgg(
                 self.aggid(filter_params)
             )
         )
+
+        if('max' in filter_params):
+            q = q[:int(filter_params['max'])]
         return q
+
+
+    def queryset_fields(self, filter_params):
+        '''
+        mapping for query resultset
+        '''
+        fields = [ 'id' ]
+        if 'category' in filter_params:
+            filter_type = filter_params['type'] if 'type' in filter_params else 'all'
+
+            if filter_type == 'all':
+                fields.append('annotation__id')
+                fields.append('annotation__category_id')
+            
+            if filter_type == 'boundingbox':
+                fields.append('annotationboundingbox__id')
+                fields.append('annotationboundingbox__category_id')
+                fields.append('annotationboundingbox__x_min')
+                fields.append('annotationboundingbox__x_max')
+                fields.append('annotationboundingbox__y_min')
+                fields.append('annotationboundingbox__y_max')
+            
+            if filter_type == 'segmentation':
+                fields.append('annotationsegmentation__id')
+                fields.append('annotationsegmentation__category_id')
+                fields.append('annotationsegmentation__mask')
+            
+            if filter_type == 'annotation':
+                fields.append('annotation__id')
+                fields.append('annotation__category_id')
+        else:
+            fields.append('dataset_id')
+
+        return fields
 
 
     def format_line(self, data, filter_params):
         '''
         
         '''
-        fields = ExportSerializer.queryset_fields(filter_params)
+        fields = self.queryset_fields(filter_params)
         if 'category' not in filter_params:
             return [
+                '/api/image/%s.png' % (data['id']),
                 '/api/image/%s.png' % (data['id']),
                 0,
                 0,
@@ -156,6 +193,7 @@ class ImageExport(DashboardApiBase):
             # annotation data
             return [
                 '/api/image/%s.png' % (data['id']),
+                '/api/image/%s.png' % (data['id']),
                 0,
                 0,
                 data['id'],
@@ -166,6 +204,7 @@ class ImageExport(DashboardApiBase):
             # boundingbox data
             return [
                 '/api/image/boundingbox_crop/%s.png' % (data['annotationboundingbox__id']),
+                '/api/image/%s.png' % (data['id']),
                 0,
                 0,
                 data['id'],
@@ -180,6 +219,7 @@ class ImageExport(DashboardApiBase):
             # segmentation data
             return [
                 '/api/image/segmentation_crop/%s.png' % (data['annotationsegmentation__id']),
+                '/api/image/%s.png' % (data['id']),
                 0,
                 0,
                 data['id'],
@@ -199,16 +239,17 @@ class ImageExport(DashboardApiBase):
         return images
 
 
-    def chunck_query(self, filter_params):
+    def shuffle_chunck_query(self, filter_params):
         '''
-        build chuncked raw data to save to file
+        build chuncked and shuffeld raw data to save to file
         '''
-        images_chuncks = self.query_export(filter_params)
-        
+        images = self.query_export(filter_params)
+        random.shuffle(images)        
+
         if 'split' in filter_params:
-            return ImageExport.split_by_string(images_chuncks, filter_params['split'])
+            return ImageExport.split_by_string(images, filter_params['split'])
         
-        return [ images_chuncks ]
+        return [ images ]
 
 
     def download(self, request):
@@ -216,7 +257,7 @@ class ImageExport(DashboardApiBase):
         api download endpoint for zip export
         '''
         filter_params = self.get_filter()
-        images_chuncks = self.chunck_query(filter_params)
+        images_chuncks = self.shuffle_chunck_query(filter_params)
 
         files = []
         i = 0

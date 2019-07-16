@@ -18,38 +18,6 @@ class ExportSerializer(serializers.ModelSerializer):
         kwargs.pop('filter_params', None)
         super(ExportSerializer, self).__init__(*args, **kwargs)
 
-    def queryset_fields(filter_params):
-        '''
-        mapping for query resultset
-        '''
-        fields = [ 'id' ]
-        if 'category' in filter_params:
-            filter_type = filter_params['type'] if 'type' in filter_params else 'all'
-
-            if filter_type == 'all':
-                fields.append('annotation__id')
-                fields.append('annotation__category_id')
-            
-            if filter_type == 'boundingbox':
-                fields.append('annotationboundingbox__id')
-                fields.append('annotationboundingbox__category_id')
-                fields.append('annotationboundingbox__x_min')
-                fields.append('annotationboundingbox__x_max')
-                fields.append('annotationboundingbox__y_min')
-                fields.append('annotationboundingbox__y_max')
-            
-            if filter_type == 'segmentation':
-                fields.append('annotationsegmentation__id')
-                fields.append('annotationsegmentation__category_id')
-                fields.append('annotationsegmentation__mask')
-            
-            if filter_type == 'annotation':
-                fields.append('annotation__id')
-                fields.append('annotation__category_id')
-        else:
-            fields.append('dataset_id')
-
-        return fields
 
     def get_url(self, obj):
         '''
@@ -88,7 +56,6 @@ class ExportSerializer(serializers.ModelSerializer):
         get type of record by filter_params and returning record data
         '''
         if 'category' in self.filter_params:
-            queryset_fields = ExportSerializer.queryset_fields(self.filter_params)
             if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
                 return 'boundingbox'
             elif 'annotationsegmentation__id' in obj and  obj['annotationsegmentation__id'] is not None:
