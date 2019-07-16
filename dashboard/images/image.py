@@ -208,22 +208,21 @@ class ImageRenderer(viewsets.ModelViewSet):
                 img = ImageRenderer.get_image(image_id)
             
             if img:
-                img.thumbnail((width,height))
+                img.thumbnail((width,height), PImage.ANTIALIAS)
                 imgs.append(img)
 
         widths, heights = zip(*(i.size for i in imgs))
 
         
         total_width = sum(widths) + (len(widths)-1)*padding
-        max_height = max(heights)
 
-        new_im = PImage.new('RGB', (total_width, max_height), color=background_color)
+        new_im = PImage.new('RGB', (total_width, height), color=background_color)
 
         x_offset = 0
-        for im in imgs:
-            y_offset = math.floor((height - im.height)/2)
-            new_im.paste(im, (x_offset,y_offset))
-            x_offset += im.size[0] + padding
+        for img in imgs:
+            y_offset = math.floor((height - img.height)/2)
+            new_im.paste(img, (x_offset,y_offset))
+            x_offset += img.size[0] + padding
 
         new_im.save(output, format='PNG')
         output.seek(0)
