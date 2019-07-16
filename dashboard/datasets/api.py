@@ -23,6 +23,13 @@ class DatasetViewSet(DashboardApiBase):
         if 'project' in filter_params:
             qs.add(Q(project=filter_params['project']), Q.AND)
 
+        if 'category' in filter_params:
+            qs.add((
+                Q(image__annotation__category=filter_params['category']) |
+                Q(image__annotationboundingbox__category=filter_params['category']) |
+                Q(image__annotationsegmentation__category=filter_params['category'])
+            ), Q.AND)
+
         if 'q' in filter_params:
             qs.add(Q(name__contains=filter_params['q']) | Q(identifier__contains=filter_params['q']), Q.AND)
     

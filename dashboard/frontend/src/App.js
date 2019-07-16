@@ -15,7 +15,8 @@ import { ProjectList, ProjectEdit, ProjectCreate } from './models/projects';
 import { DatasetList, DatasetEdit, DatasetCreate } from './models/datasets';
 import { ImageList, ImageCreate } from './models/images';
 import { ImagesEdit } from './views/images/edit/edit';
-import { CategoryList, CategoryEdit, CategoryCreate } from './models/categories';
+import { CategoryList, CategoryCreate } from './models/categories';
+import { CategoriesEdit } from './views/categories/edit/edit';
 import { AnnotationList, AnnotationEdit, AnnotationCreate } from './models/annotations';
 
 import { AnnotationBoundingboxEdit, AnnotationBoundingboxCreate } from './models/annotation_boundingboxes';
@@ -56,7 +57,7 @@ const App = () => (
     >
         <Resource name="projects" list={ProjectList} edit={ProjectEdit} create={ProjectCreate} icon={ShopTwoIcon} />
         <Resource name="datasets" list={DatasetList} edit={DatasetEdit} create={DatasetCreate} icon={LibraryBooksIcon} />
-        <Resource name="categories" list={CategoryList} edit={CategoryEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />
+        <Resource name="categories" list={CategoryList} edit={CategoriesEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />
         <Resource name="images/export" />
         <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
         <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
