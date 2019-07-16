@@ -27,7 +27,7 @@ const styles = {
 };
 
 
-class ImageDetail extends Component {
+class ImagesEditDetail extends Component {
 
     state = {
         error: false,
@@ -79,5 +79,5 @@ const mapDispatchToProps = {
 };
 
 export default withStyles(styles)(connect(mapStateToProps, mapDispatchToProps)(
-    ImageDetail
+    ImagesEditDetail
 ));

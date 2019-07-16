@@ -13,7 +13,8 @@ import { Admin, Resource } from 'react-admin';
 
 import { ProjectList, ProjectEdit, ProjectCreate } from './models/projects';
 import { DatasetList, DatasetEdit, DatasetCreate } from './models/datasets';
-import { ImageList, ImageEdit, ImageCreate } from './models/images';
+import { ImageList, ImageCreate } from './models/images';
+import { ImagesEdit } from './views/images/edit/edit';
 import { CategoryList, CategoryEdit, CategoryCreate } from './models/categories';
 import { AnnotationList, AnnotationEdit, AnnotationCreate } from './models/annotations';
 
@@ -57,7 +58,7 @@ const App = () => (
         <Resource name="datasets" list={DatasetList} edit={DatasetEdit} create={DatasetCreate} icon={LibraryBooksIcon} />
         <Resource name="categories" list={CategoryList} edit={CategoryEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />
         <Resource name="images/export" />
-        <Resource name="images" list={ImageList} edit={ImageEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
+        <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
         <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
         <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />
         <Resource name="annotation-segmentations" edit={AnnotationSegmentationEdit} create={AnnotationSegmentationCreate} />
