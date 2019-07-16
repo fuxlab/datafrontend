@@ -150,9 +150,11 @@ class TestImagesExportApi(TestCase):
         
         self.assertEqual(len(content), 1)                             # files
         self.assertEqual(len(content[0]), 2)                          # images
-        
-        self.assertEqual(content[0][0][0], ('/api/image/%s.png' % (self.image.id)))        # image1
-        self.assertEqual(content[0][1][0], ('/api/image/%s.png' % (self.image2.id)))       # image2
+
+        # we cannot be sure in which file the data is due to shuffeling
+        result_data = [content[0][0][0], content[0][1][0]]
+        self.assertTrue(('/api/image/%s.png' % (self.image.id)) in result_data)        # image1
+        self.assertTrue(('/api/image/%s.png' % (self.image2.id)) in result_data)       # image2
 
     
     def test_images_export_boundingboxes_zip(self):
@@ -179,8 +181,11 @@ class TestImagesExportApi(TestCase):
 
         self.assertEqual(len(content), 1)                             # files
         self.assertEqual(len(content[0]), 2)                          # images
-        self.assertEqual(content[0][0][0], ('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)))        # image1
-        self.assertEqual(content[0][1][0], ('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)))       # image2
+        
+        # we cannot be sure where data is due to shuffeling
+        result_data = [content[0][0][0], content[0][1][0]]
+        self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
+        self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
 
 
     def test_images_export_zip_with_split(self):
@@ -205,5 +210,8 @@ class TestImagesExportApi(TestCase):
         self.assertEqual(len(content), 2)                             # files
         self.assertEqual(len(content[0]), 1)                          # file 1, images
         self.assertEqual(len(content[1]), 1)                          # file 2, images
-        self.assertEqual(content[0][0][0], ('/api/image/%s.png' % (self.image.id)))        # image1
-        self.assertEqual(content[1][0][0], ('/api/image/%s.png' % (self.image2.id)))       # image2
+
+        # we cannot be sure in which file the data is due to shuffeling
+        result_data = [content[0][0][0], content[1][0][0]]
+        self.assertTrue(('/api/image/%s.png' % (self.image.id)) in result_data)        # image1
+        self.assertTrue(('/api/image/%s.png' % (self.image2.id)) in result_data)       # image2
