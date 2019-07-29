@@ -1,0 +1,4 @@
+from annotations.api.annotations import AnnotationViewSet
+from annotations.api.annotation_boundingboxes import AnnotationBoundingboxViewSet
+from annotations.api.annotation_segmentations import AnnotationSegmentationViewSet
+from annotations.api.batches import BatchViewSet

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'categories.apps.CategoriesConfig',
     'annotations.apps.AnnotationsConfig',
     'images.apps.ImagesConfig',
+    'background_task',
 ]
 
 MIDDLEWARE = [
