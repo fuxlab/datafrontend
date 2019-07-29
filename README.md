@@ -1,5 +1,4 @@
-Create ReactApp:
-docker-compose run datafrontend ./frontend/yarn build
+# Datafrontend
 
 Migrate DB:
 docker-compose run datafrontend python manage.py migrate
@@ -16,7 +15,6 @@ docker-compose run datafrontend python manage.py show_urls
 Recreate JS-Files (and keep watching):
 docker-compose up datafrontend
 docker-compose exec datafrontend bash > cd frontend && yarn build
-
 
 
 Docs:

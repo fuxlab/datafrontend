@@ -20,13 +20,12 @@ class TestImages(TestCase):
 
     def test_image_preview_empty(self):
         self.empty_image = Image.objects.create(name='Empty Image', dataset=self.dataset)
-        
         response = self.client.get('/api/image/' + str(self.empty_image.id) + '.png')
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
 
 
     def test_image_preview_not_existent(self):   
         response = self.client.get('/api/image/777.png')
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 404)
