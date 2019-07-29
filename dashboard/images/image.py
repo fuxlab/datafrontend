@@ -36,17 +36,21 @@ class ImageRenderer(viewsets.ModelViewSet):
     ]
 
     renderer_classes = (PNGRenderer, )
-
+    status = 200
 
 
     def thumbnail(self, request, format=None, id=None):
-        (image, img) = ImageRenderer.find_and_open_image(id)
+        '''
+        endpoint for image thumbnail in 200x200 size
+        '''
+        (image, img) = self.find_and_open_image(id)
+
         output = BytesIO()
         img.thumbnail((200,200))
         img.save(output, format='PNG')
         output.seek(0)
         
-        return Response(output.read())
+        return Response(output.read(), status=self.status)
 
 
     def preview(self, request, format=None, id=None):
@@ -54,54 +58,133 @@ class ImageRenderer(viewsets.ModelViewSet):
         endpoint for image preview with maximum 800x600 size
         optional with boundingboxes, and segmentation overlay
         '''
-        (image, img) = ImageRenderer.find_and_open_image(id)
-        output = BytesIO()
+        (image, img) = self.find_and_open_image(id)
         
+        output = BytesIO()
+
         image_type = self.request.query_params.get('type')
         if image_type is not None:
             if image_type == 'boundingbox':
-                img = ImageRenderer.draw_boundingbox(image, img)
+                img = self.draw_boundingbox(image, img)
             if image_type == 'segmentation':
-                img = ImageRenderer.draw_segmentation(image, img)
+                img = self.draw_segmentation(image, img)
         
         img.thumbnail((800,600))
         img.save(output, format='PNG')
         output.seek(0)
-        return Response(output.read())
+        return Response(output.read(), status=self.status)
 
 
     def original(self, request, format=None, id=None):
         '''
         endpoint to render original image
         '''
-        (image, img) = ImageRenderer.find_and_open_image(id)
+        (image, img) = self.find_and_open_image(id)
 
         output = BytesIO()
         img.save(output, format='PNG')
         output.seek(0)
         
-        return Response(output.read())
+        return Response(output.read(), status=self.status)
 
 
-    def find_and_open_image(image_id):
+    def boundingbox_crop(self, request, format=None, id=None):
+        '''
+        endpoint for displaying and downloading the boundingbox-crop in original size
+        '''
+        output = BytesIO()
+        img = self.get_boundingbox_crop(id)
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read(), status=self.status)
+
+
+    def segmentation_crop(self, request, format=None, id=None):
+        '''
+        endpoint for displaying and downloading the segmentation as an image in original size
+        '''
+        output = BytesIO()
+        img = self.get_segmentation_crop(id)
+        img.save(output, format='PNG')
+        output.seek(0)
+        
+        return Response(output.read(), status=self.status)
+
+
+    def plot(self, request, format=None):
+        '''
+        endpoint for plot preview of seleted types of images
+        '''
+        output = BytesIO()
+        if 'ids' not in request.query_params:
+            return HttpResponse('false')
+
+        image_type = request.query_params.get('type', 'all')
+        ids = request.query_params.get('ids').split(',')
+
+        height = 200
+        width = 200
+        padding = 30
+        background_color = (255,255,255,0)
+
+        imgs = []
+        for uid in ids:
+            if image_type == 'boundingbox':
+                type_id = uid.split('-')[-1]
+                img = self.get_boundingbox_crop(type_id)
+            elif image_type == 'segmentation':
+                type_id = uid.split('-')[-1]
+                background_color = (0,0,0,0)
+                img = self.get_segmentation_crop(type_id)
+            else:
+                image_id = uid.split('-')[0]
+                img = self.get_image(image_id)
+            
+            if img:
+                img.thumbnail((width,height), PImage.ANTIALIAS)
+                imgs.append(img)
+
+        widths, heights = zip(*(i.size for i in imgs))
+
+        
+        total_width = sum(widths) + (len(widths)-1)*padding
+
+        new_im = PImage.new('RGB', (total_width, height), color=background_color)
+
+        x_offset = 0
+        for img in imgs:
+            y_offset = math.floor((height - img.height)/2)
+            new_im.paste(img, (x_offset,y_offset))
+            x_offset += img.size[0] + padding
+
+        new_im.save(output, format='PNG')
+        output.seek(0)
+        return Response(output.read(), status=self.status)
+
+
+    def find_and_open_image(self, image_id):
         '''
         return pil image object and open image object by image_id
         '''
+        self.status = 404
         try:
             image = Image.objects.get(id=image_id)
         except:
             image = False
+            
 
         img_path = 'images/data/empty.png'
         if image and image.path is not None and len(image.path) > 0:
-            if os.path.exists(img_path):
+            if os.path.exists(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)):
                 img_path = os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)
+                self.status = 200
         
-        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
+        img = PImage.open(img_path)
         return (image, img)
 
 
-    def get_image(image_id):
+    def get_image(self, image_id):
         '''
         return pil image object by image_id
         '''       
@@ -110,16 +193,16 @@ class ImageRenderer(viewsets.ModelViewSet):
         return img
 
 
-    def get_annotation(annotation_id):
+    def get_annotation(self, annotation_id):
         '''
         return pil image object by annotation_id
         '''
         an = Annotation.objects.get(id=annotation_id)
-        (image, img) = ImageRenderer.find_and_open_image(an.image.id)
+        (image, img) = self.find_and_open_image(an.image.id)
         return img
 
 
-    def get_boundingbox_crop(annotation_boundingbox_id):
+    def get_boundingbox_crop(self, annotation_boundingbox_id):
         '''
         return pil image object by annotation_boundingbox_id
         '''
@@ -129,7 +212,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         return img
 
 
-    def get_segmentation_crop(annotation_segmentation_id):
+    def get_segmentation_crop(self, annotation_segmentation_id):
         '''
         return pil image object by annotation_segmentation_id
         '''
@@ -154,82 +237,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         return overlay
 
 
-    def boundingbox_crop(self, request, format=None, id=None):
-        '''
-        endpoint for displaying and downloading the boundingbox-crop in original size
-        '''
-        output = BytesIO()
-        img = ImageRenderer.get_boundingbox_crop(id)
-        img.save(output, format='PNG')
-        output.seek(0)
-        
-        return Response(output.read())
-
-
-    def segmentation_crop(self, request, format=None, id=None):
-        '''
-        endpoint for displaying and downloading the segmentation as an image in original size
-        '''
-        output = BytesIO()
-        img = ImageRenderer.get_segmentation_crop(id)
-        img.save(output, format='PNG')
-        output.seek(0)
-        
-        return Response(output.read())
-
-
-    def plot(self, request, format=None):
-        '''
-        plot preview of seleted types of images
-        '''
-        output = BytesIO()
-        if 'ids' not in request.query_params:
-            return HttpResponse('false')
-
-        image_type = request.query_params.get('type', 'all')
-        ids = request.query_params.get('ids').split(',')
-
-        height = 200
-        width = 200
-        padding = 30
-        background_color = (255,255,255,0)
-
-        imgs = []
-        for uid in ids:
-            if image_type == 'boundingbox':
-                type_id = uid.split('-')[-1]
-                img = ImageRenderer.get_boundingbox_crop(type_id)
-            elif image_type == 'segmentation':
-                type_id = uid.split('-')[-1]
-                background_color = (0,0,0,0)
-                img = ImageRenderer.get_segmentation_crop(type_id)
-            else:
-                image_id = uid.split('-')[0]
-                img = ImageRenderer.get_image(image_id)
-            
-            if img:
-                img.thumbnail((width,height), PImage.ANTIALIAS)
-                imgs.append(img)
-
-        widths, heights = zip(*(i.size for i in imgs))
-
-        
-        total_width = sum(widths) + (len(widths)-1)*padding
-
-        new_im = PImage.new('RGB', (total_width, height), color=background_color)
-
-        x_offset = 0
-        for img in imgs:
-            y_offset = math.floor((height - img.height)/2)
-            new_im.paste(img, (x_offset,y_offset))
-            x_offset += img.size[0] + padding
-
-        new_im.save(output, format='PNG')
-        output.seek(0)
-        return Response(output.read())
-
-
-    def draw_boundingbox(image, img):
+    def draw_boundingbox(self, image, img):
         '''
         draw boundingboxes from image on img image-canvas
         '''
@@ -243,7 +251,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         return img
 
 
-    def draw_segmentation(image, img):
+    def draw_segmentation(self, image, img):
         '''
         draw segmentation from image
         '''
