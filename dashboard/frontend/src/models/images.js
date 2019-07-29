@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, ReferenceInput, SelectInput } from 'react-admin';
 import { List, TextInput, TextField, UrlField, EditButton } from 'react-admin';
-import { Create } from 'react-admin';
+import { Create, SimpleForm } from 'react-admin';
 import ImageGrid from './../components/image_grid';
 
 
