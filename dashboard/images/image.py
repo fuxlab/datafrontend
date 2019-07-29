@@ -40,7 +40,7 @@ class ImageRenderer(viewsets.ModelViewSet):
 
 
     def thumbnail(self, request, format=None, id=None):
-        (image, img) = ImageRenderer.get_image(id)
+        (image, img) = ImageRenderer.find_and_open_image(id)
         output = BytesIO()
         img.thumbnail((200,200))
         img.save(output, format='PNG')
@@ -54,7 +54,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         endpoint for image preview with maximum 800x600 size
         optional with boundingboxes, and segmentation overlay
         '''
-        (image, img) = ImageRenderer.get_image(id)
+        (image, img) = ImageRenderer.find_and_open_image(id)
         output = BytesIO()
         
         image_type = self.request.query_params.get('type')
@@ -74,7 +74,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         endpoint to render original image
         '''
-        (image, img) = ImageRenderer.get_image(id)
+        (image, img) = ImageRenderer.find_and_open_image(id)
 
         output = BytesIO()
         img.save(output, format='PNG')
@@ -83,11 +83,10 @@ class ImageRenderer(viewsets.ModelViewSet):
         return Response(output.read())
 
 
-    def get_image(image_id):
+    def find_and_open_image(image_id):
         '''
-        return pil image object by image_id
+        return pil image object and open image object by image_id
         '''
-        
         try:
             image = Image.objects.get(id=image_id)
         except:
@@ -98,8 +97,17 @@ class ImageRenderer(viewsets.ModelViewSet):
             if os.path.exists(img_path):
                 img_path = os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)
         
-        img = PImage.open(os.path.join(img_path))
+        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
         return (image, img)
+
+
+    def get_image(image_id):
+        '''
+        return pil image object by image_id
+        '''       
+        image = Image.objects.get(id=image_id)
+        img = PImage.open(os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path))
+        return img
 
 
     def get_annotation(annotation_id):
@@ -107,7 +115,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         return pil image object by annotation_id
         '''
         an = Annotation.objects.get(id=annotation_id)
-        (image, img) = ImageRenderer.get_image(an.image.id)
+        (image, img) = ImageRenderer.find_and_open_image(an.image.id)
         return img
 
 
@@ -188,32 +196,33 @@ class ImageRenderer(viewsets.ModelViewSet):
 
         imgs = []
         for uid in ids:
-            type_id = uid.split('-')[-1]
             if image_type == 'boundingbox':
+                type_id = uid.split('-')[-1]
                 img = ImageRenderer.get_boundingbox_crop(type_id)
             elif image_type == 'segmentation':
+                type_id = uid.split('-')[-1]
                 background_color = (0,0,0,0)
                 img = ImageRenderer.get_segmentation_crop(type_id)
             else:
-                img = ImageRenderer.get_annotation(type_id)
+                image_id = uid.split('-')[0]
+                img = ImageRenderer.get_image(image_id)
             
             if img:
-                img.thumbnail((width,height))
+                img.thumbnail((width,height), PImage.ANTIALIAS)
                 imgs.append(img)
 
         widths, heights = zip(*(i.size for i in imgs))
 
         
         total_width = sum(widths) + (len(widths)-1)*padding
-        max_height = max(heights)
 
-        new_im = PImage.new('RGB', (total_width, max_height), color=background_color)
+        new_im = PImage.new('RGB', (total_width, height), color=background_color)
 
         x_offset = 0
-        for im in imgs:
-            y_offset = math.floor((height - im.height)/2)
-            new_im.paste(im, (x_offset,y_offset))
-            x_offset += im.size[0] + padding
+        for img in imgs:
+            y_offset = math.floor((height - img.height)/2)
+            new_im.paste(img, (x_offset,y_offset))
+            x_offset += img.size[0] + padding
 
         new_im.save(output, format='PNG')
         output.seek(0)

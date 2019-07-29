@@ -1,7 +1,6 @@
 import React from 'react';
-import { Filter, ReferenceInput, SelectInput } from 'react-admin';
+import { Filter, ReferenceInput, SelectInput, TextInput } from 'react-admin';
 import { List, Datagrid, TextField, EditButton } from 'react-admin';
-import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 import LinkViewImagesByCategoryType from './../components/link_view_images_by_category_type';
 import ListFilterQuick from './../components/list_filter_quick';
@@ -46,17 +45,6 @@ export const CategoryList = props => (
     </List>
 );
 
-export const CategoryEdit = props => (
-    <Edit {...props}>
-        <SimpleForm>
-            <DisabledInput source="id" />
-            <ReferenceInput source="project" reference="projects">
-                <SelectInput optionText="name" />
-            </ReferenceInput>
-            <TextInput source="name" />
-        </SimpleForm>
-    </Edit>
-);
 
 export const CategoryCreate = props => (
     <Create {...props}>
