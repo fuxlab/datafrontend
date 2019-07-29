@@ -35,12 +35,13 @@ class BatchViewSet(DashboardApiBase):
         save queue
         '''
         serializer.save()
+        
+        batch_id = serializer['id'].value
         if serializer.data['action'] == 'update_images_dataset':
-            update_images_dataset(serializer.data['params'])
+            update_images_dataset(batch_id)
         elif serializer.data['action'] == 'update_annotations_category':
-            print('update_annotations_category')
-            update_annotations_category(serializer.data['params'])
+            update_annotations_category(batch_id)
         elif serializer.data['action'] == 'update_annotation_boundingboxes_category':
-            update_annotation_boundingboxes_category(serializer.data['params'])
+            update_annotation_boundingboxes_category(batch_id)
         elif serializer.data['action'] == 'update_annotation_segmentations_category':
-            update_annotation_segmentations_category(serializer.data['params'])
+            update_annotation_segmentations_category(batch_id)

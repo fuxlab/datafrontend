@@ -41,8 +41,9 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
         
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(str(Task.objects.all()[0]), 'annotations.tasks.batches.update_images_dataset')
-
+        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_images_dataset')
+        self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
+        
 
     def test_change_annotations_categories(self):
         response = self.client.post(self.base_path, data=json.dumps({
@@ -51,7 +52,8 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(str(Task.objects.all()[0]), 'annotations.tasks.batches.update_annotations_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotations_category')
+        self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 
 
     def test_change_annotation_boundingboxes(self):
@@ -61,7 +63,8 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(str(Task.objects.all()[0]), 'annotations.tasks.batches.update_annotation_boundingboxes_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotation_boundingboxes_category')
+        self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 
 
     def test_change_annotations_sementations(self):
@@ -71,5 +74,6 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(str(Task.objects.all()[0]), 'annotations.tasks.batches.update_annotation_segmentations_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotation_segmentations_category')
+        self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 
