@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, ReferenceInput, SelectInput, TextInput } from 'react-admin';
 import { List, Datagrid, TextField, EditButton } from 'react-admin';
-import { Create } from 'react-admin';
+import { Create, SimpleForm } from 'react-admin';
 import LinkViewImagesByCategoryType from './../components/link_view_images_by_category_type';
 import ListFilterQuick from './../components/list_filter_quick';
 
