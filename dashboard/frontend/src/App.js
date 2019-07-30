@@ -19,7 +19,7 @@ import { CategoryList, CategoryCreate } from './models/categories';
 import { CategoriesEdit } from './views/categories/edit/edit';
 
 import { BatchesList } from './views/tools/batches/list';
-import { BatchesEdit } from './views/tools/batches/edit';
+import { BatchesShow } from './views/tools/batches/show';
 import { BatchesCreate } from './views/tools/batches/create';
 
 import { AnnotationEdit, AnnotationCreate } from './models/annotations';
@@ -65,7 +65,7 @@ const App = () => (
         <Resource name="images/export" />
         <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
         
-        <Resource name="batches" list={BatchesList} edit={BatchesEdit} create={BatchesCreate} />
+        <Resource name="batches" list={BatchesList} show={BatchesShow} create={BatchesCreate} />
 
         <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
         <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />

@@ -17,7 +17,7 @@ export const BatchesCreate = withStyles(BatchesEditStyles)(({ classes, ...props 
                 <SelectInput
                     className={classes.default_input}
                     source="action"
-                    label="Action"
+                    label="Performing Action"
                     choices={[
                         { id: 'update_images_dataset', name: 'update_images_dataset' },
                         { id: 'update_annotations_category', name: 'update_annotations_category' },
@@ -29,8 +29,8 @@ export const BatchesCreate = withStyles(BatchesEditStyles)(({ classes, ...props 
                     resettable
                     alwaysOn
                 />
-                <LongTextInput source="params[0]" />
-                <NumberInput source="params[1]" />
+                <LongTextInput label="IDs of all changed Items" source="params[0]" helperText="ids should be comma separated" />
+                <NumberInput label="New target ID" source="params[1]" />
             </SimpleForm>
         </Create>
     );

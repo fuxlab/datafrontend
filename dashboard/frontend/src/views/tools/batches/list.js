@@ -1,6 +1,6 @@
 import React from 'react';
 import { Filter, ReferenceInput, TextInput, SelectInput } from 'react-admin';
-import { List, Datagrid, TextField, EditButton, DeleteButton, DateField } from 'react-admin';
+import { List, Datagrid, TextField, ShowButton, DeleteButton, DateField } from 'react-admin';
 
 const BatchesFilter = (props) => (
     <Filter {...props}>
@@ -16,7 +16,7 @@ export const BatchesList = props => (
             <TextField source="status" />
             <DateField source="created_at" showTime />
             <DateField source="updated_at" showTime />
-            <EditButton />
+            <ShowButton />
             <DeleteButton />
         </Datagrid>
     </List>
