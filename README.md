@@ -1,20 +1,33 @@
 # Datafrontend
 
+Datafrontend is a holistic solution to manage data for your machine learning products.
+
+
 Migrate DB:
-docker-compose run datafrontend python manage.py migrate
+
+    docker-compose run datafrontend python manage.py migrate
 
 Make Migration:
-docker-compose run datafrontend python manage.py makemigrations results
+
+    docker-compose run datafrontend python manage.py makemigrations results
 
 Run Tests:
-docker-compose run datafrontend python manage.py test
+
+    docker-compose run datafrontend python manage.py test
 
 Show All Routes:
-docker-compose run datafrontend python manage.py show_urls
+
+    docker-compose run datafrontend python manage.py show_urls
 
 Recreate JS-Files (and keep watching):
-docker-compose up datafrontend
-docker-compose exec datafrontend bash > cd frontend && yarn build
+
+    docker-compose up datafrontend
+    docker-compose exec datafrontend bash > cd frontend && yarn build
+
+Run Tasks:
+
+    docker-compose run datafrontend python manage.py process_tasks
+
 
 
 Docs:

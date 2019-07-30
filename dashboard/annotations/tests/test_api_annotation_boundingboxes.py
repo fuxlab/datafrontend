@@ -7,7 +7,7 @@ from projects.models import Project
 from datasets.models import Dataset
 from categories.models import Category
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox
+from annotations.models import AnnotationBoundingbox
 
 class TestApiAnnotationBoundingboxes(TestCase):
 

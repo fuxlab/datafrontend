@@ -8,3 +8,4 @@ google-cloud-bigquery
 django-extensions
 Pillow
 pycocotools
+django-background-tasks

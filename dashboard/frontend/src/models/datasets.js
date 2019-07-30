@@ -74,7 +74,7 @@ export const DatasetEdit = props => (
 export const DatasetCreate = props => (
     <Create {...props}>
         <SimpleForm>
-            <ReferenceInput source="project_id" reference="projects">
+            <ReferenceInput source="project" reference="projects">
                 <SelectInput optionText="name" />
             </ReferenceInput>
             <TextInput source="identifier" />

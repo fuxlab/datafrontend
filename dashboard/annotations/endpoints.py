@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 
-from .api import AnnotationViewSet, AnnotationBoundingboxViewSet, AnnotationSegmentationViewSet
+from annotations.api import AnnotationViewSet, AnnotationBoundingboxViewSet, AnnotationSegmentationViewSet
 
 router = routers.DefaultRouter()
 router.register('annotations', AnnotationViewSet, basename='annotations')

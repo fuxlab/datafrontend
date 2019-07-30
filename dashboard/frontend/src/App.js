@@ -17,8 +17,12 @@ import { ImageList, ImageCreate } from './models/images';
 import { ImagesEdit } from './views/images/edit/edit';
 import { CategoryList, CategoryCreate } from './models/categories';
 import { CategoriesEdit } from './views/categories/edit/edit';
-import { AnnotationList, AnnotationEdit, AnnotationCreate } from './models/annotations';
 
+import { BatchesList } from './views/tools/batches/list';
+import { BatchesShow } from './views/tools/batches/show';
+import { BatchesCreate } from './views/tools/batches/create';
+
+import { AnnotationEdit, AnnotationCreate } from './models/annotations';
 import { AnnotationBoundingboxEdit, AnnotationBoundingboxCreate } from './models/annotation_boundingboxes';
 import { AnnotationSegmentationEdit, AnnotationSegmentationCreate } from './models/annotations_segmentations';
 
@@ -60,6 +64,9 @@ const App = () => (
         <Resource name="categories" list={CategoryList} edit={CategoriesEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />
         <Resource name="images/export" />
         <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
+        
+        <Resource name="batches" list={BatchesList} show={BatchesShow} create={BatchesCreate} />
+
         <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
         <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />
         <Resource name="annotation-segmentations" edit={AnnotationSegmentationEdit} create={AnnotationSegmentationCreate} />

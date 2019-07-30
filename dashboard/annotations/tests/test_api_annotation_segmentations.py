@@ -7,7 +7,7 @@ from projects.models import Project
 from datasets.models import Dataset
 from categories.models import Category
 from images.models import Image
-from annotations.models import Annotation, AnnotationSegmentation
+from annotations.models import AnnotationSegmentation
 
 class TestApiAnnotationSegmentations(TestCase):
 

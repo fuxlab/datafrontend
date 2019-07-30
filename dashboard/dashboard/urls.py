@@ -23,6 +23,7 @@ from datasets import endpoints as datasets_endpoints
 from images import endpoints as images_endpoints
 from categories import endpoints as categories_endpoints
 from annotations import endpoints as annotations_endpoints
+from tools import endpoints as tools_endpoints
 
 urlpatterns = [
     url(r'^api/', include(projects_endpoints)),
@@ -30,5 +31,6 @@ urlpatterns = [
     url(r'^api/', include(images_endpoints)),
     url(r'^api/', include(categories_endpoints)),
     url(r'^api/', include(annotations_endpoints)),
+    url(r'^api/', include(tools_endpoints)),
     path('', TemplateView.as_view(template_name="index.html")),
 ]
