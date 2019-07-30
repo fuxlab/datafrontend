@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, SimpleForm, TextInput, DisabledInput, SelectInput } from 'react-admin';
+import { Edit, SimpleForm, NumberInput, LongTextInput, DisabledInput, SelectInput } from 'react-admin';
 import { Create } from 'react-admin';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -29,8 +29,8 @@ export const BatchesCreate = withStyles(BatchesEditStyles)(({ classes, ...props 
                     resettable
                     alwaysOn
                 />
-                <TextInput source="params_ids" />
-                <TextInput source="params_id" />
+                <LongTextInput source="params[0]" />
+                <NumberInput source="params[1]" />
             </SimpleForm>
         </Create>
     );

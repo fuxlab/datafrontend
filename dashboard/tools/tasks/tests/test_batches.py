@@ -6,9 +6,10 @@ from projects.models import Project
 from categories.models import Category
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Batch, Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
-from annotations.tasks.batches import update_images_dataset, update_annotations_category, update_annotation_boundingboxes_category, update_annotation_segmentations_category
+from tools.models import Batch
+from tools.tasks.batches import update_images_dataset, update_annotations_category, update_annotation_boundingboxes_category, update_annotation_segmentations_category
 
 
 class TestAnnotationsTasksBatches(TestCase):
@@ -31,10 +32,14 @@ class TestAnnotationsTasksBatches(TestCase):
         
         dataset2 = Dataset.objects.create(name='Test 2', project=self.project)
         batch = Batch.objects.create(action='update_images_dataset', params=[ [image1.id, image2.id, image3.id, image4.id, image5.id], dataset2.id] )
+        self.assertEqual(batch.status, 'pending')
 
         changed_items = update_images_dataset.now(batch.id)
         self.assertEqual(changed_items, 5)
         self.assertEqual(Image.objects.filter(dataset=dataset2).count(), 5)
+
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.status, 'finished')
 
 
     def test_update_annotation_category(self):
@@ -54,6 +59,9 @@ class TestAnnotationsTasksBatches(TestCase):
         self.assertEqual(changed_items, 4)
         self.assertEqual(Annotation.objects.filter(category=category2).count(), 4)
 
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.status, 'finished')
+
     
     def test_update_annotation_boundingboxes_category(self):
         image1 = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
@@ -72,6 +80,9 @@ class TestAnnotationsTasksBatches(TestCase):
         self.assertEqual(changed_items, 4)
         self.assertEqual(AnnotationBoundingbox.objects.filter(category=category2).count(), 4)
 
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.status, 'finished')
+
 
     def test_update_annotation_segmnentations_category(self):
         image1 = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
@@ -89,3 +100,6 @@ class TestAnnotationsTasksBatches(TestCase):
         changed_items = update_annotation_segmentations_category.now(batch.id)
         self.assertEqual(changed_items, 4)
         self.assertEqual(AnnotationSegmentation.objects.filter(category=category2).count(), 4)
+
+        batch = Batch.objects.get(id=batch.id)
+        self.assertEqual(batch.status, 'finished')

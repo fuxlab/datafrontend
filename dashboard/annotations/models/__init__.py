@@ -1,4 +1,3 @@
 from annotations.models.annotation import Annotation
 from annotations.models.annotation_boundingbox import AnnotationBoundingbox
 from annotations.models.annotation_segmentation import AnnotationSegmentation
-from annotations.models.batch import Batch

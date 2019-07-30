@@ -1,5 +1,4 @@
 import React from 'react';
-import { List, Datagrid, TextField, EditButton } from 'react-admin';
 import { Edit, SimpleForm, TextInput, DisabledInput } from 'react-admin';
 import { Create } from 'react-admin';
 

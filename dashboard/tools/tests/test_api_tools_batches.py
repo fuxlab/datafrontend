@@ -10,7 +10,7 @@ from projects.models import Project
 from categories.models import Category
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Batch
+from tools.models import Batch
 
 
 class TestApiAnnotations(TestCase):
@@ -41,7 +41,7 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
         
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_images_dataset')
+        self.assertEqual(Task.objects.all()[0].task_name, 'tools.tasks.batches.update_images_dataset')
         self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
         
 
@@ -52,7 +52,7 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotations_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'tools.tasks.batches.update_annotations_category')
         self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 
 
@@ -63,7 +63,7 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotation_boundingboxes_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'tools.tasks.batches.update_annotation_boundingboxes_category')
         self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 
 
@@ -74,6 +74,6 @@ class TestApiAnnotations(TestCase):
         }), content_type='application/json')
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(Task.objects.all()[0].task_name, 'annotations.tasks.batches.update_annotation_segmentations_category')
+        self.assertEqual(Task.objects.all()[0].task_name, 'tools.tasks.batches.update_annotation_segmentations_category')
         self.assertEqual(Task.objects.all()[0].params()[0][0], response.data['id'])
 

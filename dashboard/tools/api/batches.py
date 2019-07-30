@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from dashboard.lib.api_base import DashboardApiBase
-from annotations.models import Batch
-from annotations.serializers import BatchSerializer
 
-from annotations.tasks.batches import update_images_dataset, update_annotations_category, update_annotation_boundingboxes_category, update_annotation_segmentations_category
+from tools.models import Batch
+from tools.serializers import BatchSerializer
+from tools.tasks.batches import update_images_dataset, update_annotations_category, update_annotation_boundingboxes_category, update_annotation_segmentations_category
+
 
 class BatchViewSet(DashboardApiBase):
 
@@ -35,7 +36,6 @@ class BatchViewSet(DashboardApiBase):
         save queue
         '''
         serializer.save()
-        
         batch_id = serializer['id'].value
         if serializer.data['action'] == 'update_images_dataset':
             update_images_dataset(batch_id)
