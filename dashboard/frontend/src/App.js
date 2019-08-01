@@ -22,6 +22,8 @@ import { BatchesList } from './views/tools/batches/list';
 import { BatchesShow } from './views/tools/batches/show';
 import { BatchesCreate } from './views/tools/batches/create';
 
+import { ConflictsList } from './views/tools/conflicts/list';
+
 import { AnnotationEdit, AnnotationCreate } from './models/annotations';
 import { AnnotationBoundingboxEdit, AnnotationBoundingboxCreate } from './models/annotation_boundingboxes';
 import { AnnotationSegmentationEdit, AnnotationSegmentationCreate } from './models/annotations_segmentations';
@@ -66,6 +68,7 @@ const App = () => (
         <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />
         
         <Resource name="batches" list={BatchesList} show={BatchesShow} create={BatchesCreate} />
+        <Resource name="conflicts" list={ConflictsList} />
 
         <Resource name="annotations" edit={AnnotationEdit} create={AnnotationCreate} />
         <Resource name="annotation-boundingboxes" edit={AnnotationBoundingboxEdit} create={AnnotationBoundingboxCreate} />

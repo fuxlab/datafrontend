@@ -13,7 +13,7 @@ from images.models import Image
 from tools.models import Batch
 
 
-class TestApiAnnotations(TestCase):
+class TestApiToolsBatches(TestCase):
 
 
     def setUp(self):

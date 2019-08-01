@@ -14,7 +14,7 @@ class Batch(models.Model):
 
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
     def params_list(self, index):

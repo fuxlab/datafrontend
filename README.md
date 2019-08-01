@@ -24,7 +24,16 @@ Recreate JS-Files (and keep watching):
     docker-compose up datafrontend
     docker-compose exec datafrontend bash > cd frontend && yarn build
 
-Run Tasks:
+Go into Django Shell:
+
+    python manage.py shell
+
+Show all Tasks:
+
+    docker-compose run datafrontend python manage.py help
+
+
+Run Tasks Sheduler:
 
     docker-compose run datafrontend python manage.py process_tasks
 
