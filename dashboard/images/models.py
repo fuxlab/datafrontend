@@ -14,6 +14,9 @@ class Image(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
+    height = models.IntegerField(default=0, null=True)
+    width = models.IntegerField(default=0, null=True)
+
     def __str__(self):
         return self.name
 
