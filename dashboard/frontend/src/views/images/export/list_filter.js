@@ -85,6 +85,34 @@ const ImagesExportListFilter = withStyles(ImagesExportListFilterStyles)(({ class
                 alwaysOn
             />
 
+            <SelectInput
+                className={classes.default_input}
+                source="shuffle"
+                label="Shuffle"
+                choices={[
+                    { id: 'yes', name: 'yes' },
+                    { id: 'no', name: 'no' },
+                ]}
+                optionText="name"
+                allowEmpty={false}
+                resettable
+                alwaysOn
+            />
+
+            <SelectInput
+                className={classes.default_input}
+                source="format"
+                label="Format"
+                choices={[
+                    { id: 'csv', name: 'CSV' },
+                    { id: 'coco', name: 'Coco' },
+                ]}
+                optionText="name"
+                allowEmpty={false}
+                resettable
+                alwaysOn
+            />
+
             <NumberInput
                 className={classes.default_input}
                 label="Count of Entries"

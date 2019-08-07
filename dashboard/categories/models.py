@@ -52,3 +52,10 @@ class Category(models.Model):
         reuturn count of segmentations
         '''
         return self.annotationsegmentation_set.count()
+
+    def quick_name(id):
+        try:
+            category = Category.objects.get(id=id)
+            return category.name
+        except:
+            return 'Category %s' % (id)

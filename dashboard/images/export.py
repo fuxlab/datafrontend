@@ -16,7 +16,10 @@ from dashboard.lib.pagination import Pagination
 from images.models import Image
 from images.serializers.export import ExportSerializer
 
+from categories.models import Category
+
 import csv, io
+import datetime
 import zipfile, json
 import random
 
@@ -61,6 +64,91 @@ class ImageExport(DashboardApiBase):
             writer.writerow(line)
         
         return string.getvalue()
+
+    def list_to_coco_string(lines):
+        '''
+        format a list to string to be saved in coco format
+        '''
+        licenses = [
+            {
+                "url": "http://creativecommons.org/createLicense",
+                "id": 1,
+                "name": "no license given"
+            }
+        ]
+
+        images = []
+        images_ids = []
+
+        categories = []
+        category_ids = []
+
+        annotations = []
+        
+        now_time = str(datetime.datetime.now())
+        now_date = str(datetime.datetime.today().strftime('%Y/%m/%d'))
+        now_year = int(datetime.datetime.today().strftime('%Y'))
+        
+        for line in lines:
+
+            if line['width'] == 0 or line['height'] == 0:
+                continue
+
+            if line['image_id'] not in images_ids:
+                images.append({
+                    'license': 1,
+                    'file_name': line['image_path'],
+                    'height': line['height'],
+                    'width': line['width'],
+                    "date_captured": now_time,
+                    'id': line['image_id']
+                })
+            
+            annotation = {
+                'id': line['id'],
+                'image_id': line['image_id'],
+                'category_id': line['category_id'],
+                'area': (((line['x_max'] - line['x_min']) * line['width']) * ((line['y_max'] - line['y_min']) * line['height'])),
+                'iscrowd': 0,
+            }
+            
+            if 'mask' in line:
+                annotation['segmentation'] = line['mask']
+            
+            if 'x_min' in line:
+                # x, y, width, height
+                annotation['bbox'] = [
+                    line['x_min'] * line['width'],
+                    line['y_min'] * line['height'],
+                    (line['x_max'] - line['x_min']) * line['width'],
+                    (line['y_max'] - line['y_min']) * line['height'],
+                ]
+            annotations.append(annotation)
+
+            if line['category_id'] not in category_ids:
+                category_ids.append(line['category_id'])
+                categories.append({
+                    'supercategory': '',
+                    'id': line['category_id'],
+                    'name': Category.quick_name(line['category_id'])
+                })
+
+        data = {
+            'info': {
+                'description': 'Datafrontend export',
+                'url': 'https://datafrontend.com',
+                'version': '1.0',
+                'year': now_year,
+                'contributor': 'Datafrontend User',
+                'date_created': now_date
+            },
+            'licenses': licenses,
+            'images': images,
+            'annotations': annotations,
+            'categories': categories
+        }
+
+        return json.dumps(data)
     
 
     def apply_filter(self, filter_params):
@@ -144,7 +232,7 @@ class ImageExport(DashboardApiBase):
         '''
         mapping for query resultset
         '''
-        fields = [ 'id' ]
+        fields = [ 'id', 'width', 'height' ]
         if 'category' in filter_params:
             filter_type = filter_params['type'] if 'type' in filter_params else 'all'
 
@@ -180,76 +268,67 @@ class ImageExport(DashboardApiBase):
         '''
         fields = self.queryset_fields(filter_params)
         if 'category' not in filter_params:
-            return [
-                '/api/image/%s.png' % (data['id']),
-                '/api/image/%s.png' % (data['id']),
-                0,
-                0,
-                data['id'],
-                data['dataset_id']
-            ]
+            return {
+                'id': data['id'],
+                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'width': data['width'],
+                'height': data['height'],
+                'image_id': data['id'],
+                'category_id': data['dataset_id']
+            }
 
         if 'annotation__id' in data and  data['annotation__id'] is not None:
             # annotation data
-            return [
-                '/api/image/%s.png' % (data['id']),
-                '/api/image/%s.png' % (data['id']),
-                0,
-                0,
-                data['id'],
-                data['annotation__category_id']
-            ]
+            return {
+                'id': data['id'],
+                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'width': data['width'],
+                'height': data['height'],
+                'image_id': data['id'],
+                'category_id': data['annotation__category_id']
+            }
         
         if 'annotationboundingbox__id' in data and data['annotationboundingbox__id'] is not None:
             # boundingbox data
-            return [
-                '/api/image/boundingbox_crop/%s.png' % (data['annotationboundingbox__id']),
-                '/api/image/%s.png' % (data['id']),
-                0,
-                0,
-                data['id'],
-                data['annotationboundingbox__category_id'],
-                data['annotationboundingbox__x_min'],
-                data['annotationboundingbox__x_max'],
-                data['annotationboundingbox__y_min'],
-                data['annotationboundingbox__y_max'],
-            ]
+            return {
+                'id': data['annotationboundingbox__id'],
+                'annotation_boundingbox_image_path': ('/api/image/boundingbox_crop/%s.png' % (data['annotationboundingbox__id'])),
+                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'width': data['width'],
+                'height': data['height'],
+                'image_id': data['id'],
+                'category_id': data['annotationboundingbox__category_id'],
+                'x_min': data['annotationboundingbox__x_min'],
+                'x_max': data['annotationboundingbox__x_max'],
+                'y_min': data['annotationboundingbox__y_min'],
+                'y_max': data['annotationboundingbox__y_max'],
+            }
         
         if 'annotationsegmentation__id' in data and data['annotationsegmentation__id'] is not None:
             # segmentation data
-            return [
-                '/api/image/segmentation_crop/%s.png' % (data['annotationsegmentation__id']),
-                '/api/image/%s.png' % (data['id']),
-                0,
-                0,
-                data['id'],
-                data['annotationsegmentation__category_id'],
-                data['annotationsegmentation__mask'],
-            ]
+            return {
+                'id': data['annotationsegmentation__id'],
+                'annotation_segmentation_image_path': ('/api/image/segmentation_crop/%s.png' % (data['annotationsegmentation__id'])),
+                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'width': data['width'],
+                'height': data['height'],
+                'image_id': data['id'],
+                'category_id': data['annotationsegmentation__category_id'],
+                'mask': data['annotationsegmentation__mask'],
+            }
+        return {}
 
-
+    
     def query_export(self, filter_params):
         '''
         build raw data
         '''
         images = []
         for result_data in self.queryset(filter_params):
-            images.append(self.format_line(result_data, filter_params))
-
+            images.append(
+                self.format_line(result_data, filter_params)
+            )
         return images
-
-
-    def shuffle_chunck_query(self, filter_params):
-        '''
-        build chuncked and shuffeld raw data to save to file
-        '''
-        images = self.query_export(filter_params)
-        random.shuffle(images)        
-
-        if 'split' in filter_params:
-            return ImageExport.split_by_string(images, filter_params['split'])
-        
-        return [ images ]
 
 
     def download(self, request):
@@ -257,15 +336,36 @@ class ImageExport(DashboardApiBase):
         api download endpoint for zip export
         '''
         filter_params = self.get_filter()
-        images_chuncks = self.shuffle_chunck_query(filter_params)
+        export_format = filter_params.get('format', 'csv')
 
+        images = self.query_export(filter_params)
+        
+        if 'shuffle' in filter_params and filter_params['shuffle'] == 'yes':
+            random.shuffle(images)
+        
+        if 'split' in filter_params:
+            images_chuncks = ImageExport.split_by_string(images, filter_params['split'])
+        else:
+            images_chuncks = [ images ]
+        
         files = []
         i = 0
         for image_chunck in images_chuncks:
-            files.append({
-                'file': '%s.csv' % (chr(97 + i)),
-                'content': ImageExport.list_to_csv_string(image_chunck)
-            })
+            
+            if export_format == 'csv':
+                # make list without id
+                data_list = [ list(r.values())[1:] for r in image_chunck ]
+                files.append({
+                    'file': '%s.csv' % (chr(97 + i)),
+                    'content': ImageExport.list_to_csv_string(data_list)
+                })
+            
+            elif export_format == 'coco':
+                files.append({
+                    'file': '%s.json' % (chr(97 + i)),
+                    'content': ImageExport.list_to_coco_string(image_chunck)
+                })
+
             i += 1
 
         zip_filename = 'output_filename.zip'

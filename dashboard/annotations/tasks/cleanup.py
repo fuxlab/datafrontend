@@ -8,14 +8,23 @@ from images.models import Image
 
 
 @background(schedule=0)
-def cleanup_annotation_boundingboxes():
+def cleanup_annotation_boundingboxes(category_ids=[]):
     
     # find all images with minimum two boundingboxes in same category
     # query can be improoved that iou-calculation is not needed:
     # add group_by: (x_min, x_max, y_min, y_max)
-    bb_results = AnnotationBoundingbox.objects.values('image_id', 'category_id')\
-        .annotate(category_id_count=Count('category_id'))\
-        .filter(category_id_count__gte=2)
+    if len(category_ids) == 0:
+        bb_results = AnnotationBoundingbox.objects.values('image_id', 'category_id')\
+            .annotate(
+                category_id_count=Count('category_id')
+            )\
+            .filter(category_id_count__gte=2)
+    else:
+        bb_results = AnnotationBoundingbox.objects.values('image_id', 'category_id')\
+            .annotate(
+                category_id_count=Count('category_id'),
+            )\
+            .filter(category_id_count__gte=2, category_id__in=category_ids)
 
     deleted = []
     for bb in bb_results:
@@ -39,6 +48,6 @@ def cleanup_annotation_boundingboxes():
             if distance == 1.0:
                 deleted.append(b.id)
 
-    AnnotationBoundingbox.objects.filter(id__in=deleted).delete()
+    AnnotationBoundingbox.objects.filter(id__in=deleted).update(category_id=0)
 
     return len(deleted)

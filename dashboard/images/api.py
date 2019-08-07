@@ -41,4 +41,3 @@ class ImageViewSet(DashboardApiBase):
             return Image.objects.filter(q_objects).distinct().order_by(self.get_sort())
         else:
             return Image.objects.filter(q_objects).order_by(self.get_sort())
-
