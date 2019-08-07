@@ -39,17 +39,17 @@ class TestToolsTasksConflicts(TestCase):
         bb31  = AnnotationBoundingbox.objects.create(image=image3, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
         bb32  = AnnotationBoundingbox.objects.create(image=image3, category=self.category, x_min=200, x_max=300, y_min=200, y_max=300)
 
-        create_annotation_boundingbox_conflicts.now()
+        create_annotation_boundingbox_conflicts.now(threshold=0.8)
         
         conflicts = Conflict.objects.all()
         self.assertEqual(len(conflicts), 4)
         self.assertEqual([Conflict.REASON_AN_BB_DUP], list(set([item.reason for item in conflicts])))
 
         expected_conflicted_ids = [
-            [bb11.id, bb12.id],
             [bb21.id, bb22.id],
             [bb21.id, bb23.id],
-            [bb22.id, bb23.id]
+            [bb22.id, bb23.id],
+            [bb11.id, bb12.id],
         ]
         conflicted_ids = [item.affected_ids for item in conflicts]
         self.assertEqual(expected_conflicted_ids, conflicted_ids)

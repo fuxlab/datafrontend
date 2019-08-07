@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test import Client
 from django.test.client import encode_multipart
 from urllib.parse import urlencode
-import io, zipfile, csv
+import io, zipfile, csv, json
 
 from projects.models import Project
 from images.models import Image
@@ -27,16 +27,16 @@ class TestImagesExportApi(TestCase):
         self.project = Project.objects.create(name='Project 1')
         
         self.dataset = Dataset.objects.create(name='Test Dataset 1', project=self.project)
-        self.category = Category.objects.create(name='Category 1', project=self.project)
-        self.image = Image.objects.create(name=self.image_base_name + '1', url=self.image_base_url + '1', dataset=self.dataset)
+        self.category = Category.objects.create(name='Categoryname 1', project=self.project)
+        self.image = Image.objects.create(name=self.image_base_name + '1', url=self.image_base_url + '1', dataset=self.dataset, width=100, height=200)
 
         self.dataset2 = Dataset.objects.create(name='Test Dataset 2', project=self.project)
-        self.category2 = Category.objects.create(name='Category 2', project=self.project)
-        self.image2 = Image.objects.create(name=self.image_base_name + '2', url=self.image_base_url + '2', dataset=self.dataset2)
+        self.category2 = Category.objects.create(name='Categoryname 2', project=self.project)
+        self.image2 = Image.objects.create(name=self.image_base_name + '2', url=self.image_base_url + '2', dataset=self.dataset2, width=100, height=200)
 
         self.dataset3 = Dataset.objects.create(name='Test Dataset 3', project=self.project)
-        self.category3 = Category.objects.create(name='Category 3', project=self.project)
-        self.image3 = Image.objects.create(name=self.image_base_name + '3', url=self.image_base_url + '3', dataset=self.dataset3)
+        self.category3 = Category.objects.create(name='Categoryname 3', project=self.project)
+        self.image3 = Image.objects.create(name=self.image_base_name + '3', url=self.image_base_url + '3', dataset=self.dataset3, width=100, height=200)
 
 
     def createAnnotations(self):
@@ -156,7 +156,7 @@ class TestImagesExportApi(TestCase):
         self.assertTrue(('/api/image/%s.png' % (self.image.id)) in result_data)        # image1
         self.assertTrue(('/api/image/%s.png' % (self.image2.id)) in result_data)       # image2
 
-    
+
     def test_images_export_boundingboxes_zip(self):
         self.createAnnotations()
 
@@ -186,6 +186,37 @@ class TestImagesExportApi(TestCase):
         result_data = [content[0][0][0], content[0][1][0]]
         self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
         self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
+
+    def test_images_export_coco_boundingboxes_zip(self):
+        self.createAnnotations()
+
+        url = '/api/images/export.zip'
+        query_string = urlencode({ 'filter' : {
+            'category': [self.category.id, self.category2.id],
+            'type': 'boundingbox',
+            'format': 'coco'
+        }})
+        response = self.client.get(url + '?' + query_string)            
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/zip')
+        
+        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
+        
+        self.assertEqual(['a.json'], downloaded_zip.namelist())
+        
+        data = {}
+        for file_name in downloaded_zip.namelist():
+            file_a = downloaded_zip.open(file_name)
+            data = json.load(io.TextIOWrapper(file_a))
+
+        self.assertEqual(len(data['images']), 2) # images
+        self.assertEqual([c['name'] for c in data['categories']], [self.category.name, self.category2.name]) # images
+        
+        # we cannot be sure where data is due to shuffeling
+        #result_data = [content[0][0][1], content[0][1][1]]
+        #self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
+        #self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
 
 
     def test_images_export_zip_with_split(self):
