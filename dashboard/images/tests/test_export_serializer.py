@@ -63,7 +63,7 @@ class TestExportSerializer(TestCase):
         self.assertEqual(serializer.data, {
             'id': '1-2',
             'type': 'boundingbox',
-            'url': '/api/image/boundingbox_crop/2.png',
+            'url': '/api/image/boundingbox_2.png',
             'image': '/api/image/1.png',
             'category': 3,
         })
@@ -85,7 +85,7 @@ class TestExportSerializer(TestCase):
         self.assertEqual(serializer.data, {
             'id': '1-2',
             'type': 'segmentation',
-            'url': '/api/image/segmentation_crop/2.png',
+            'url': '/api/image/segmentation_2.png',
             'image': '/api/image/1.png',
             'category': 3,
         })

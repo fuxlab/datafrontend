@@ -270,7 +270,7 @@ class ImageExport(DashboardApiBase):
         if 'category' not in filter_params:
             return {
                 'id': data['id'],
-                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'image_path': ('%s.png' % (data['id'])),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -281,7 +281,7 @@ class ImageExport(DashboardApiBase):
             # annotation data
             return {
                 'id': data['id'],
-                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'image_path': ('%s.png' % (data['id'])),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -292,8 +292,8 @@ class ImageExport(DashboardApiBase):
             # boundingbox data
             return {
                 'id': data['annotationboundingbox__id'],
-                'annotation_boundingbox_image_path': ('/api/image/boundingbox_crop/%s.png' % (data['annotationboundingbox__id'])),
-                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'annotation_boundingbox_image_path': ('boundingbox_%s.png' % (data['annotationboundingbox__id'])),
+                'image_path': ('%s.png' % (data['id'])),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -308,8 +308,8 @@ class ImageExport(DashboardApiBase):
             # segmentation data
             return {
                 'id': data['annotationsegmentation__id'],
-                'annotation_segmentation_image_path': ('/api/image/segmentation_crop/%s.png' % (data['annotationsegmentation__id'])),
-                'image_path': ('/api/image/%s.png' % (data['id'])),
+                'annotation_segmentation_image_path': ('segmentation_%s.png' % (data['annotationsegmentation__id'])),
+                'image_path': ('%s.png' % (data['id'])),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],

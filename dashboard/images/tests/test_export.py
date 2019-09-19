@@ -35,8 +35,8 @@ class TestImagesExport(TestCase):
         # we expect images from (dataset 1 or 2)
         # exported data should look like
         # filename, width, height, uid (image_id), class
-        self.assertEqual(result[0], [image1.id, '/api/image/%s.png' % (image1.id), 0, 0, image1.id, dataset1.id])
-        self.assertEqual(result[1], [image2.id, '/api/image/%s.png' % (image2.id), 0, 0, image2.id, dataset2.id])
+        self.assertEqual(result[0], [image1.id, '%s.png' % (image1.id), 0, 0, image1.id, dataset1.id])
+        self.assertEqual(result[1], [image2.id, '%s.png' % (image2.id), 0, 0, image2.id, dataset2.id])
 
 
     def test_return_images_with_category_scope(self):
@@ -67,8 +67,8 @@ class TestImagesExport(TestCase):
 
         # exported data should look like
         # filename, width, height, image_id, class_id
-        an_data = [image1.id, '/api/image/%s.png' % (image1.id), 0, 0, image1.id, category1.id]
-        bb_data = [annotation2.id, '/api/image/boundingbox_crop/%s.png' % (annotation2.id), '/api/image/%s.png' % (image2.id), 0, 0, image2.id, category2.id, 0.0, 0.0, 0.0 ,0.0]
+        an_data = [image1.id, '%s.png' % (image1.id), 0, 0, image1.id, category1.id]
+        bb_data = [annotation2.id, 'boundingbox_%s.png' % (annotation2.id), '%s.png' % (image2.id), 0, 0, image2.id, category2.id, 0.0, 0.0, 0.0 ,0.0]
         
         self.assertEqual(len(result), 2)
         self.assertTrue(an_data in result)
@@ -86,8 +86,8 @@ class TestImagesExport(TestCase):
         # we expect images from (category 1 or 2)
         # exported data should look like
         # filename, width, height, image_id, class_id, mask
-        exp_data1 = [annotation3.id, '/api/image/segmentation_crop/%s.png' % (annotation3.id), '/api/image/%s.png' % (image3.id), 0, 0, image3.id, category3.id, 'mask']
-        exp_data2 = [annotation4.id, '/api/image/segmentation_crop/%s.png' % (annotation4.id), '/api/image/%s.png' % (image3.id), 0, 0, image3.id, category3.id, 'mask2']
+        exp_data1 = [annotation3.id, 'segmentation_%s.png' % (annotation3.id), '%s.png' % (image3.id), 0, 0, image3.id, category3.id, 'mask']
+        exp_data2 = [annotation4.id, 'segmentation_%s.png' % (annotation4.id), '%s.png' % (image3.id), 0, 0, image3.id, category3.id, 'mask2']
         
         self.assertEqual(len(result), 2)
         # no conflict here - file only needs to be downloaded once, so same filename is ok
@@ -120,8 +120,8 @@ class TestImagesExport(TestCase):
         # we expect images from from dataset2
         # exported data should look like
         # filename, width, height, image_id, class_id, xmin, xmax, ymin, ymax
-        exp_data11 = [annotation_boundingbox11.id, '/api/image/boundingbox_crop/%s.png' % (annotation_boundingbox11.id), '/api/image/%s.png' % (image.id), 0, 0, image.id, category.id, 10.0, 20.0, 10.0, 20.0]
-        exp_data21 = [annotation_boundingbox21.id, '/api/image/boundingbox_crop/%s.png' % (annotation_boundingbox21.id), '/api/image/%s.png' % (image2.id), 0, 0, image2.id, category.id, 10.0, 20.0, 10.0, 20.0]
+        exp_data11 = [annotation_boundingbox11.id, 'boundingbox_%s.png' % (annotation_boundingbox11.id), '%s.png' % (image.id), 0, 0, image.id, category.id, 10.0, 20.0, 10.0, 20.0]
+        exp_data21 = [annotation_boundingbox21.id, 'boundingbox_%s.png' % (annotation_boundingbox21.id), '%s.png' % (image2.id), 0, 0, image2.id, category.id, 10.0, 20.0, 10.0, 20.0]
 
         self.assertEqual(len(result), 2)
         self.assertTrue(exp_data11 in result)
@@ -156,8 +156,8 @@ class TestImagesExport(TestCase):
         # we expect images from from dataset2
         # exported data should look like
         # filename, width, height, image_id, class_id, mask
-        exp_data1 = [annotation_segmentation1.id, '/api/image/segmentation_crop/%s.png' % (annotation_segmentation1.id), '/api/image/%s.png' % (image2.id), 0, 0, image2.id, category.id, 'mask1']
-        exp_data2 = [annotation_segmentation2.id, '/api/image/segmentation_crop/%s.png' % (annotation_segmentation2.id), '/api/image/%s.png' % (image2.id), 0, 0, image2.id, category.id, 'mask2']
+        exp_data1 = [annotation_segmentation1.id, 'segmentation_%s.png' % (annotation_segmentation1.id), '%s.png' % (image2.id), 0, 0, image2.id, category.id, 'mask1']
+        exp_data2 = [annotation_segmentation2.id, 'segmentation_%s.png' % (annotation_segmentation2.id), '%s.png' % (image2.id), 0, 0, image2.id, category.id, 'mask2']
 
         self.assertEqual(len(result), 2)
         self.assertTrue(exp_data1 in result)

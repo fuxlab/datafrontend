@@ -25,9 +25,9 @@ class ExportSerializer(serializers.ModelSerializer):
         '''
         if 'category' in self.filter_params:
             if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
-                return '/api/image/boundingbox_crop/%s.png' % (obj['annotationboundingbox__id'])
+                return '/api/image/boundingbox_%s.png' % (obj['annotationboundingbox__id'])
             elif 'annotationsegmentation__id' in obj and obj['annotationsegmentation__id'] is not None:
-                return '/api/image/segmentation_crop/%s.png' % (obj['annotationsegmentation__id'])
+                return '/api/image/segmentation_%s.png' % (obj['annotationsegmentation__id'])
             else:
                 return '/api/image/%s.png' % (obj['id'])
 
