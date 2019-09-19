@@ -35,7 +35,7 @@ const ConflictsListPreview = withStyles(ConflictsListPreviewStyles)(({ classes, 
         message = props.record.message; 
         var index = 0;
         for(const bb_id of props.record.affected_ids) {
-            var image_url = `/api/image/boundingbox_crop/${bb_id}.png`;
+            var image_url = `/api/image/boundingbox_${bb_id}.png`;
             var choice = String.fromCharCode(65 + index);
             items.push(
                 <td className={classes.tableRow}>

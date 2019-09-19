@@ -95,7 +95,7 @@ class TestImagesExportApi(TestCase):
         exp_id = '%s-%s' % (self.image2.id, self.annotation_boundingbox2.id)
         exp_data1 = {
             'id': exp_id,
-            'url': '/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id),
+            'url': '/api/image/boundingbox_%s.png' % (self.annotation_boundingbox2.id),
             'type': 'boundingbox',
             'image': '/api/image/%s.png' % (self.image2.id),
             'category': self.category2.id,
@@ -116,7 +116,7 @@ class TestImagesExportApi(TestCase):
         exp_id = '%s-%s' % (self.image3.id, self.annotation_segmentation2.id)
         exp_data1 = {
             'id': exp_id,
-            'url': ('/api/image/segmentation_crop/%s.png' % (self.annotation_segmentation2.id)),
+            'url': ('/api/image/segmentation_%s.png' % (self.annotation_segmentation2.id)),
             'type': 'segmentation',
             'image': '/api/image/%s.png' % (self.image3.id),
             'category': self.category3.id,
@@ -124,125 +124,3 @@ class TestImagesExportApi(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertTrue(exp_data1 in response.data)
-
-    
-    def test_images_export_zip(self):
-        self.createAnnotations()
-
-        url = '/api/images/export.zip'
-        query_string = urlencode({ 'filter' : {
-            'dataset': [self.dataset.id, self.dataset2.id],
-            'type': 'all'
-        } })
-        response = self.client.get(url + '?' + query_string)            
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/zip')
-        
-        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
-        
-        self.assertEqual(['a.csv'], downloaded_zip.namelist())
-        
-        content = []
-        for file_name in downloaded_zip.namelist():
-            file_a = downloaded_zip.open(file_name)
-            content.append([ list(row) for row in csv.reader(io.TextIOWrapper(file_a)) ])
-        
-        self.assertEqual(len(content), 1)                             # files
-        self.assertEqual(len(content[0]), 2)                          # images
-
-        # we cannot be sure in which file the data is due to shuffeling
-        result_data = [content[0][0][0], content[0][1][0]]
-        self.assertTrue(('/api/image/%s.png' % (self.image.id)) in result_data)        # image1
-        self.assertTrue(('/api/image/%s.png' % (self.image2.id)) in result_data)       # image2
-
-
-    def test_images_export_boundingboxes_zip(self):
-        self.createAnnotations()
-
-        url = '/api/images/export.zip'
-        query_string = urlencode({ 'filter' : {
-            'category': [self.category.id, self.category2.id],
-            'type': 'boundingbox'
-        }})
-        response = self.client.get(url + '?' + query_string)            
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/zip')
-        
-        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
-        
-        self.assertEqual(['a.csv'], downloaded_zip.namelist())
-        
-        content = []
-        for file_name in downloaded_zip.namelist():
-            file_a = downloaded_zip.open(file_name)
-            content.append([ list(row) for row in csv.reader(io.TextIOWrapper(file_a)) ])
-
-        self.assertEqual(len(content), 1)                             # files
-        self.assertEqual(len(content[0]), 2)                          # images
-        
-        # we cannot be sure where data is due to shuffeling
-        result_data = [content[0][0][0], content[0][1][0]]
-        self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
-        self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
-
-    def test_images_export_coco_boundingboxes_zip(self):
-        self.createAnnotations()
-
-        url = '/api/images/export.zip'
-        query_string = urlencode({ 'filter' : {
-            'category': [self.category.id, self.category2.id],
-            'type': 'boundingbox',
-            'format': 'coco'
-        }})
-        response = self.client.get(url + '?' + query_string)            
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/zip')
-        
-        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
-        
-        self.assertEqual(['a.json'], downloaded_zip.namelist())
-        
-        data = {}
-        for file_name in downloaded_zip.namelist():
-            file_a = downloaded_zip.open(file_name)
-            data = json.load(io.TextIOWrapper(file_a))
-
-        self.assertEqual(len(data['images']), 2) # images
-        self.assertEqual([c['name'] for c in data['categories']], [self.category.name, self.category2.name]) # images
-        
-        # we cannot be sure where data is due to shuffeling
-        #result_data = [content[0][0][1], content[0][1][1]]
-        #self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
-        #self.assertTrue(('/api/image/boundingbox_crop/%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
-
-
-    def test_images_export_zip_with_split(self):
-        self.createAnnotations()
-
-        url = '/api/images/export.zip'
-        query_string = urlencode({ 'filter' : {'dataset': [self.dataset.id, self.dataset2.id], 'split': '50_50'} })
-        response = self.client.get(url + '?' + query_string)            
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['Content-Type'], 'application/zip')
-        
-        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
-        
-        self.assertEqual(['a.csv', 'b.csv'], downloaded_zip.namelist())
-        
-        content = []
-        for file_name in downloaded_zip.namelist():
-            file_a = downloaded_zip.open(file_name)
-            content.append([ list(row) for row in csv.reader(io.TextIOWrapper(file_a)) ])
-        
-        self.assertEqual(len(content), 2)                             # files
-        self.assertEqual(len(content[0]), 1)                          # file 1, images
-        self.assertEqual(len(content[1]), 1)                          # file 2, images
-
-        # we cannot be sure in which file the data is due to shuffeling
-        result_data = [content[0][0][0], content[1][0][0]]
-        self.assertTrue(('/api/image/%s.png' % (self.image.id)) in result_data)        # image1
-        self.assertTrue(('/api/image/%s.png' % (self.image2.id)) in result_data)       # image2
