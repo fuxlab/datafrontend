@@ -20,6 +20,7 @@ class Image(models.Model):
     def __str__(self):
         return self.name
 
+
     def line(self):
         '''
         return one line with basic information for csv export purposes

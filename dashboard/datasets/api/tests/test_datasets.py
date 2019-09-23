@@ -1,19 +1,37 @@
-from django.test import TestCase
-from django.test import Client
+import os
+
+from django.test import TestCase, override_settings, Client
+from tests.lib.file_handling import test_create_files, test_delete_folders
 from django.test.client import encode_multipart
 from urllib.parse import urlencode
 
 from projects.models import Project
 from datasets.models import Dataset
 
+from background_task.models import Task
+
+test_settings = override_settings(
+    DATAFRONTEND = {
+        'DATA_PATH': 'datasets/tests/data'
+    }
+)
+
 class TestApiDatasets(TestCase):
 
     def setUp(self):
         self.client = Client()
+        
         self.project = Project.objects.create(name='Project 1')
         self.dataset_name = 'Datasetname'
-        self.dataset_identifier = 'Identifier'
+        self.dataset_identifier = 'identifier'
         self.dataset = Dataset.objects.create(name=self.dataset_name, project=self.project)
+        
+        self.new_created_folder = os.path.join('datasets/tests/data', self.dataset_identifier)
+        test_create_files([ os.path.join(self.new_created_folder, 'test.txt') ])
+
+
+    def tearDown(self):
+        test_delete_folders([ self.new_created_folder ])
 
 
     def create_multi(self):
@@ -73,11 +91,38 @@ class TestApiDatasets(TestCase):
         self.assertEqual(response.data[0]['id'], self.dataset3.id)
 
 
-    def test_creation(self):
-        response = self.client.post('/api/datasets/', { 'name': self.dataset_name, 'identifier': self.dataset_identifier, 'project': self.project.id })
+    @test_settings
+    def test_creation_existing_folder(self):
+        response = self.client.post('/api/datasets/', { 'name': 'new dataset', 'identifier': self.dataset_identifier, 'project': self.project.id })
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.data['name'], self.dataset_name)
+        self.assertEqual(response.data['name'], 'new dataset')
+
+        self.assertTrue(os.path.isdir(self.new_created_folder))
+
+        # check for new message to init in queue
+        tasks = Task.objects.all()
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0].task_name, 'datasets.tasks.init_folder.init_folder_task')
+        self.assertEqual(tasks[0].params(), ([response.data['id']], {}))
+
+
+    @test_settings
+    def test_creation_new_folder(self):
+        response = self.client.post('/api/datasets/', { 'name': 'new dataset', 'identifier': 'new_folder', 'project': self.project.id })
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['name'], 'new dataset')
+
+        # check for new created folder
+        expected_created_path = os.path.join('datasets/tests/data', response.data['identifier'])
+        self.assertTrue(os.path.isdir(expected_created_path))
+        
+        # new folder is created, so no init
+        tasks = Task.objects.all()
+        self.assertEqual(len(tasks), 0)
+
+        test_delete_folders([ os.path.join('datasets/tests/data', 'new_folder') ])
 
 
     def test_show(self):
@@ -88,9 +133,7 @@ class TestApiDatasets(TestCase):
 
 
     def test_edit(self):
-        response1 = self.client.post('/api/datasets/', { 'name': 'old_name', 'identifier': 'old_identifier', 'project': self.project.id  })
-        created_id = response1.data['id']
-        self.assertEqual(response1.status_code, 201)
+        created_id = self.dataset.id
 
         new_data = { 'name': 'new_name', 'identifier': 'new_identifier', 'project': self.project.id }
         content = encode_multipart('BoUnDaRyStRiNg', new_data)
@@ -104,6 +147,10 @@ class TestApiDatasets(TestCase):
         self.assertEqual(response3.status_code, 200)
         self.assertEqual(response3.data['name'], new_data['name'])
         self.assertEqual(response3.data['identifier'], new_data['identifier'])
+
+        # new folder is created, so no init
+        tasks = Task.objects.all()
+        self.assertEqual(len(tasks), 0)
 
 
     def test_delete(self):
