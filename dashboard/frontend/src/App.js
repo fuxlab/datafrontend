@@ -12,7 +12,10 @@ import CollectionsBookmarkIcon from '@material-ui/icons/CollectionsBookmark';
 import { Admin, Resource } from 'react-admin';
 
 import { ProjectList, ProjectEdit, ProjectCreate } from './models/projects';
-import { DatasetList, DatasetEdit, DatasetCreate } from './models/datasets';
+
+import { DatasetCreate } from './views/datasets/edit/create';
+import { DatasetList, DatasetEdit } from './models/datasets';
+
 import { ImageList, ImageCreate } from './models/images';
 import { ImagesEdit } from './views/images/edit/edit';
 import { CategoryList, CategoryCreate } from './models/categories';
@@ -61,6 +64,8 @@ const App = () => (
         appLayout={DefaultLayout}
         theme={DatafrontendTheme}
     >
+        <Resource name="folders" />
+
         <Resource name="projects" list={ProjectList} edit={ProjectEdit} create={ProjectCreate} icon={ShopTwoIcon} />
         <Resource name="datasets" list={DatasetList} edit={DatasetEdit} create={DatasetCreate} icon={LibraryBooksIcon} />
         <Resource name="categories" list={CategoryList} edit={CategoriesEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />

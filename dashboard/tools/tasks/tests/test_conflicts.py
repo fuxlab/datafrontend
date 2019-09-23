@@ -52,4 +52,6 @@ class TestToolsTasksConflicts(TestCase):
             [bb11.id, bb12.id],
         ]
         conflicted_ids = [item.affected_ids for item in conflicts]
-        self.assertEqual(expected_conflicted_ids, conflicted_ids)
+
+        self.assertTrue(len(expected_conflicted_ids) == len(conflicted_ids))
+        self.assertTrue(sorted(expected_conflicted_ids) == sorted(conflicted_ids))
