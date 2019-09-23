@@ -53,7 +53,11 @@ class Category(models.Model):
         '''
         return self.annotationsegmentation_set.count()
 
+
     def quick_name(id):
+        '''
+        Search for a category and return name, otherwise generate a default with id
+        '''
         try:
             category = Category.objects.get(id=id)
             return category.name

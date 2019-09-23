@@ -33,3 +33,12 @@ class Dataset(models.Model):
         return self.image_set.count()
 
         
+    def quick_name(id):
+        '''
+        Search for a dataset and return name, otherwise generate a default with id
+        '''
+        try:
+            dataset = Dataset.objects.get(id=id)
+            return dataset.name
+        except:
+            return 'Dataset %s' % (id)

@@ -81,6 +81,33 @@ class TestImagesExportZip(TestCase):
         self.assertTrue(('%s.png' % (self.image2.id)) in result_data)       # image2
 
 
+    def test_images_export_coco_zip(self):
+        self.createAnnotations()
+
+        url = '/api/images/export.zip'
+        query_string = urlencode({ 'filter' : {
+            'dataset': [self.dataset.id, self.dataset2.id],
+            'type': 'all',
+            'format': 'coco'
+        } })
+        response = self.client.get(url + '?' + query_string)            
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/zip')
+        
+        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
+        
+        self.assertEqual(['a.json'], downloaded_zip.namelist())
+        
+        data = {}
+        for file_name in downloaded_zip.namelist():
+            file_a = downloaded_zip.open(file_name)
+            data = json.load(io.TextIOWrapper(file_a))
+
+        self.assertEqual(len(data['images']), 2) # images
+        self.assertEqual([c['name'] for c in data['categories']], [self.dataset.name, self.dataset2.name]) # images
+
+
     def test_images_export_boundingboxes_zip(self):
         self.createAnnotations()
 
@@ -110,6 +137,7 @@ class TestImagesExportZip(TestCase):
         result_data = [content[0][0][0], content[0][1][0]]
         self.assertTrue(('boundingbox_%s.png' % (self.annotation_boundingbox1.id)) in result_data)        # image1
         self.assertTrue(('boundingbox_%s.png' % (self.annotation_boundingbox2.id)) in result_data)       # image2
+
 
     def test_images_export_coco_boundingboxes_zip(self):
         self.createAnnotations()

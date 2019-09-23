@@ -16,6 +16,7 @@ from dashboard.lib.pagination import Pagination
 from images.models import Image
 from images.serializers.export import ExportSerializer
 
+from datasets.models import Dataset
 from categories.models import Category
 
 import csv, io
@@ -104,11 +105,15 @@ class ImageExport(DashboardApiBase):
                     'id': line['image_id']
                 })
             
+            area = 0
+            if 'x_min' in line:
+                area = (((line['x_max'] - line['x_min']) * line['width']) * ((line['y_max'] - line['y_min']) * line['height']))
+
             annotation = {
                 'id': line['id'],
                 'image_id': line['image_id'],
                 'category_id': line['category_id'],
-                'area': (((line['x_max'] - line['x_min']) * line['width']) * ((line['y_max'] - line['y_min']) * line['height'])),
+                'area': area,
                 'iscrowd': 0,
             }
             
@@ -127,10 +132,15 @@ class ImageExport(DashboardApiBase):
 
             if line['category_id'] not in category_ids:
                 category_ids.append(line['category_id'])
+                if line['type'] == 'dataset':
+                    name = Dataset.quick_name(line['category_id'])
+                else:
+                    name = Category.quick_name(line['category_id'])
+
                 categories.append({
                     'supercategory': '',
                     'id': line['category_id'],
-                    'name': Category.quick_name(line['category_id'])
+                    'name': name
                 })
 
         data = {
@@ -274,7 +284,8 @@ class ImageExport(DashboardApiBase):
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
-                'category_id': data['dataset_id']
+                'category_id': data['dataset_id'],
+                'type': 'dataset',
             }
 
         if 'annotation__id' in data and  data['annotation__id'] is not None:
@@ -285,7 +296,8 @@ class ImageExport(DashboardApiBase):
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
-                'category_id': data['annotation__category_id']
+                'category_id': data['annotation__category_id'],
+                'type': 'annotation',
             }
         
         if 'annotationboundingbox__id' in data and data['annotationboundingbox__id'] is not None:
@@ -302,6 +314,7 @@ class ImageExport(DashboardApiBase):
                 'x_max': data['annotationboundingbox__x_max'],
                 'y_min': data['annotationboundingbox__y_min'],
                 'y_max': data['annotationboundingbox__y_max'],
+                'type': 'boundingbox',
             }
         
         if 'annotationsegmentation__id' in data and data['annotationsegmentation__id'] is not None:
@@ -315,6 +328,7 @@ class ImageExport(DashboardApiBase):
                 'image_id': data['id'],
                 'category_id': data['annotationsegmentation__category_id'],
                 'mask': data['annotationsegmentation__mask'],
+                'type': 'segmentation',
             }
         return {}
 
