@@ -80,6 +80,34 @@ class TestImagesExportZip(TestCase):
         self.assertTrue(('%s.png' % (self.image.id)) in result_data)        # image1
         self.assertTrue(('%s.png' % (self.image2.id)) in result_data)       # image2
 
+    
+    def test_images_export_jpg_zip(self):
+        self.createAnnotations()
+
+        url = '/api/images/export.zip'
+        query_string = urlencode({ 'filter' : {
+            'dataset': [self.dataset.id, self.dataset2.id],
+            'type': 'all',
+            'ext': 'jpg'
+        } })
+        response = self.client.get(url + '?' + query_string)            
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/zip')
+        
+        downloaded_zip = zipfile.ZipFile(io.BytesIO(response.content))
+        
+        self.assertEqual(['a.csv'], downloaded_zip.namelist())
+        
+        content = []
+        for file_name in downloaded_zip.namelist():
+            file_a = downloaded_zip.open(file_name)
+            content.append([ list(row) for row in csv.reader(io.TextIOWrapper(file_a)) ])
+
+        result_data = [content[0][0][0], content[0][1][0]]
+        self.assertTrue(('%s.jpg' % (self.image.id)) in result_data)        # image1
+        self.assertTrue(('%s.jpg' % (self.image2.id)) in result_data)       # image2
+
 
     def test_images_export_coco_zip(self):
         self.createAnnotations()

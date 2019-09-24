@@ -92,8 +92,8 @@ class ImageExport(DashboardApiBase):
         
         for line in lines:
 
-            if line['width'] == 0 or line['height'] == 0:
-                continue
+            #if line['width'] == 0 or line['height'] == 0:
+            #    continue
 
             if line['image_id'] not in images_ids:
                 images.append({
@@ -277,10 +277,16 @@ class ImageExport(DashboardApiBase):
         
         '''
         fields = self.queryset_fields(filter_params)
+
+        if 'ext' in filter_params and filter_params['ext'] == 'jpg':
+            ext = 'jpg'
+        else:
+            ext = 'png'
+
         if 'category' not in filter_params:
             return {
                 'id': data['id'],
-                'image_path': ('%s.png' % (data['id'])),
+                'image_path': ('%s.%s' % (data['id'], ext)),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -292,7 +298,7 @@ class ImageExport(DashboardApiBase):
             # annotation data
             return {
                 'id': data['id'],
-                'image_path': ('%s.png' % (data['id'])),
+                'image_path': ('%s.%s' % (data['id'], ext)),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -304,8 +310,8 @@ class ImageExport(DashboardApiBase):
             # boundingbox data
             return {
                 'id': data['annotationboundingbox__id'],
-                'annotation_boundingbox_image_path': ('boundingbox_%s.png' % (data['annotationboundingbox__id'])),
-                'image_path': ('%s.png' % (data['id'])),
+                'annotation_boundingbox_image_path': ('boundingbox_%s.%s' % (data['annotationboundingbox__id'], ext)),
+                'image_path': ('%s.%s' % (data['id'], ext)),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
@@ -321,8 +327,8 @@ class ImageExport(DashboardApiBase):
             # segmentation data
             return {
                 'id': data['annotationsegmentation__id'],
-                'annotation_segmentation_image_path': ('segmentation_%s.png' % (data['annotationsegmentation__id'])),
-                'image_path': ('%s.png' % (data['id'])),
+                'annotation_segmentation_image_path': ('segmentation_%s.%s' % (data['annotationsegmentation__id'], ext)),
+                'image_path': ('%s.%s' % (data['id'], ext)),
                 'width': data['width'],
                 'height': data['height'],
                 'image_id': data['id'],
