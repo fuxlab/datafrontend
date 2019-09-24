@@ -29,14 +29,26 @@ class PNGRenderer(renderers.BaseRenderer):
         return image_data
 
 
+class JPEGRenderer(renderers.BaseRenderer):
+    
+    media_type = 'image/jpeg'
+    format = 'jpeg'
+    charset = None
+    render_style = 'binary'
+
+    def render(self, image_data, media_type=None, renderer_context=None):
+        return image_data
+
+
 class ImageRenderer(viewsets.ModelViewSet):
     
     permission_classes = [
         permissions.AllowAny
     ]
-
-    renderer_classes = (PNGRenderer, )
     status = 200
+    
+    renderer_classes = (PNGRenderer, )
+    ext = 'PNG'
 
 
     def thumbnail(self, request, format=None, id=None):
@@ -47,7 +59,7 @@ class ImageRenderer(viewsets.ModelViewSet):
 
         output = BytesIO()
         img.thumbnail((200,200))
-        img.save(output, format='PNG')
+        img.save(output, format=self.ext)
         output.seek(0)
         
         return Response(output.read(), status=self.status)
@@ -70,7 +82,7 @@ class ImageRenderer(viewsets.ModelViewSet):
                 img = self.draw_segmentation(image, img)
         
         img.thumbnail((800,600))
-        img.save(output, format='PNG')
+        img.save(output, format=self.ext)
         output.seek(0)
         return Response(output.read(), status=self.status)
 
@@ -82,7 +94,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         (image, img) = self.find_and_open_image(id)
 
         output = BytesIO()
-        img.save(output, format='PNG')
+        img.save(output, format=self.ext)
         output.seek(0)
         
         return Response(output.read(), status=self.status)
@@ -94,7 +106,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         output = BytesIO()
         img = self.get_boundingbox_crop(id)
-        img.save(output, format='PNG')
+        img.save(output, format=self.ext)
         output.seek(0)
         
         return Response(output.read(), status=self.status)
@@ -106,7 +118,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         output = BytesIO()
         img = self.get_segmentation_crop(id)
-        img.save(output, format='PNG')
+        img.save(output, format=self.ext)
         output.seek(0)
         
         return Response(output.read(), status=self.status)
@@ -158,7 +170,7 @@ class ImageRenderer(viewsets.ModelViewSet):
             new_im.paste(img, (x_offset,y_offset))
             x_offset += img.size[0] + padding
 
-        new_im.save(output, format='PNG')
+        new_im.save(output, format=self.ext)
         output.seek(0)
         return Response(output.read(), status=self.status)
 
@@ -284,3 +296,8 @@ class ImageRenderer(viewsets.ModelViewSet):
                 img = overlay
             
         return img
+
+
+class JPGImageRenderer(ImageRenderer):
+    renderer_classes = (JPEGRenderer, )
+    ext = 'JPEG'
