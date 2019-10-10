@@ -66,7 +66,7 @@ class ImageExport(DashboardApiBase):
         
         return string.getvalue()
 
-    def list_to_coco_string(lines):
+    def list_to_coco_string(lines, resize=None):
         '''
         format a list to string to be saved in coco format
         '''
@@ -92,22 +92,28 @@ class ImageExport(DashboardApiBase):
         
         for line in lines:
 
-            #if line['width'] == 0 or line['height'] == 0:
-            #    continue
+            height = line['height']
+            width = line['width']
+            file_name = line['image_path']
 
+            if resize is not None:
+                width = int(resize[0])
+                height = int(resize[1])
+                file_name = '%s?resize=%sx%s' % (file_name, width, height)
+                
             if line['image_id'] not in images_ids:
                 images.append({
                     'license': 1,
-                    'file_name': line['image_path'],
-                    'height': line['height'],
-                    'width': line['width'],
+                    'file_name': file_name,
+                    'height': height,
+                    'width': width,
                     "date_captured": now_time,
                     'id': line['image_id']
                 })
             
             area = 0
             if 'x_min' in line:
-                area = (((line['x_max'] - line['x_min']) * line['width']) * ((line['y_max'] - line['y_min']) * line['height']))
+                area = (((line['x_max'] - line['x_min']) * width) * ((line['y_max'] - line['y_min']) * height))
 
             annotation = {
                 'id': line['id'],
@@ -123,10 +129,10 @@ class ImageExport(DashboardApiBase):
             if 'x_min' in line:
                 # x, y, width, height
                 annotation['bbox'] = [
-                    line['x_min'] * line['width'],
-                    line['y_min'] * line['height'],
-                    (line['x_max'] - line['x_min']) * line['width'],
-                    (line['y_max'] - line['y_min']) * line['height'],
+                    line['x_min'] * width,
+                    line['y_min'] * height,
+                    (line['x_max'] - line['x_min']) * width,
+                    (line['y_max'] - line['y_min']) * height,
                 ]
             annotations.append(annotation)
 
@@ -367,6 +373,11 @@ class ImageExport(DashboardApiBase):
             images_chuncks = ImageExport.split_by_string(images, filter_params['split'])
         else:
             images_chuncks = [ images ]
+
+        resize = None
+        if 'resize' in filter_params:
+            resize = tuple(filter_params['resize'].split('x'))
+
         
         files = []
         i = 0
@@ -383,7 +394,7 @@ class ImageExport(DashboardApiBase):
             elif export_format == 'coco':
                 files.append({
                     'file': '%s.json' % (chr(97 + i)),
-                    'content': ImageExport.list_to_coco_string(image_chunck)
+                    'content': ImageExport.list_to_coco_string(image_chunck, resize=resize)
                 })
 
             i += 1

@@ -50,6 +50,11 @@ class ImageRenderer(viewsets.ModelViewSet):
     renderer_classes = (PNGRenderer, )
     ext = 'PNG'
 
+    def resize(self, request, img):
+        if 'resize' in request.query_params:
+            width, height = request.query_params['resize'].split('x')
+            img = img.resize((int(width),int(height)))
+        return img
 
     def thumbnail(self, request, format=None, id=None):
         '''
@@ -92,6 +97,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         endpoint to render original image
         '''
         (image, img) = self.find_and_open_image(id)
+        img = self.resize(request, img)
 
         output = BytesIO()
         img.save(output, format=self.ext)
@@ -106,6 +112,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         output = BytesIO()
         img = self.get_boundingbox_crop(id)
+        img = self.resize(request, img)
         img.save(output, format=self.ext)
         output.seek(0)
         
@@ -118,6 +125,7 @@ class ImageRenderer(viewsets.ModelViewSet):
         '''
         output = BytesIO()
         img = self.get_segmentation_crop(id)
+        img = self.resize(request, img)
         img.save(output, format=self.ext)
         output.seek(0)
         
@@ -192,7 +200,7 @@ class ImageRenderer(viewsets.ModelViewSet):
                 img_path = os.path.join(settings.DATAFRONTEND['DATA_PATH'], image.path)
                 self.status = 200
         
-        img = PImage.open(img_path)
+        img = PImage.open(img_path).convert('RGB')
         return (image, img)
 
 

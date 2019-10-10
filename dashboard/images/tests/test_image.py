@@ -7,6 +7,9 @@ from projects.models import Project
 from images.models import Image
 from datasets.models import Dataset
 
+from PIL import Image as PImage
+from io import BytesIO
+
 test_settings = override_settings(
     DATAFRONTEND = {
         'DATA_PATH': 'images/data/'
@@ -27,13 +30,35 @@ class TestImages(TestCase):
     @test_settings
     def test_image_preview(self):
         response = self.client.get('/api/image/' + str(self.image.id) + '.png')
+        img = PImage.open(BytesIO(response.content))
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(img.size, (299, 169))
+
+    @test_settings
+    def test_image_preview_resize(self):
+        response = self.client.get('/api/image/' + str(self.image.id) + '.png?resize=500x500')
+        img = PImage.open(BytesIO(response.content))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(img.size, (500, 500))
 
     @test_settings
     def test_image_preview_jpg(self):
         response = self.client.get('/api/image/' + str(self.image.id) + '.jpg')
+        img = PImage.open(BytesIO(response.content))
+
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(img.size, (299, 169))
     
+    @test_settings
+    def test_image_preview_jpg_resize(self):
+        response = self.client.get('/api/image/' + str(self.image.id) + '.jpg?resize=500x500')
+        img = PImage.open(BytesIO(response.content))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(img.size, (500, 500))
+
 
     def test_image_preview_empty(self):
         self.empty_image = Image.objects.create(name='Empty Image', dataset=self.dataset)
