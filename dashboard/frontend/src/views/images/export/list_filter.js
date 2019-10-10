@@ -127,6 +127,20 @@ const ImagesExportListFilter = withStyles(ImagesExportListFilterStyles)(({ class
                 alwaysOn
             />
 
+            <SelectInput
+                className={classes.default_input}
+                source="resize"
+                label="Image Size"
+                choices={[
+                    { id: '300x300', name: '300x300' },
+                    { id: '512x512', name: '512x512' },
+                ]}
+                optionText="name"
+                allowEmpty={true}
+                resettable
+                alwaysOn
+            />
+
             <NumberInput
                 className={classes.default_input}
                 label="Count of Entries"
