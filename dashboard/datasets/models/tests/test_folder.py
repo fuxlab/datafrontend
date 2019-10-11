@@ -33,7 +33,7 @@ class TestModelsFolder(TestCase):
         path='datasets/tests/data/folder1/folder11'
         result = Folder.files(path, extensions=[])
 
-        self.assertEqual(['testfile11.fake.jpg', 'testfile12.fake.png', 'testfile13.txt'], result)
+        self.assertEqual(sorted(['testfile11.fake.jpg', 'testfile12.fake.png', 'testfile13.txt']), sorted(result))
 
 
     def test_files_only_some(self):
