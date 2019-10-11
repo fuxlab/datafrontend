@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    env_file: .env
+    image: postgres
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  
+  datafrontend:
+    build: ./
+    env_file: .env
+    environment:
+      ENVIRONMENT: 'test'
+      DATA_PATH: '/data'
+    build: .
+    command: ["/bin/bash", "/usr/local/startup.sh"]
+    volumes:
+      - ./dashboard:/app
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    links:
+      - db
