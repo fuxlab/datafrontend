@@ -6,35 +6,23 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleTracker = require('webpack-bundle-tracker');
 const extractCSS = new ExtractTextPlugin('[name].fonts.css');
 const extractSCSS = new ExtractTextPlugin('[name].styles.css');
-const BUILD_DIR = path.resolve(__dirname, 'build');
+const BUILD_DIR = path.resolve(__dirname, '../assets/bundles/');
 const SRC_DIR = path.resolve(__dirname, 'src');
 
 module.exports = (env = {}) => {
   return {
     entry: {
-      // Any changes in code dependency pointed to by 'entry'
-      // will trigger webpack-dev-server to create a new
-      // bundle in memory
-      index: [ SRC_DIR + '/index.js' ]
+      index: [ SRC_DIR + '/index' ]
     },
     output: {
       path: path.resolve('../assets/bundles/'),
-      filename: '[name].bundle.js'
+      filename: "[name]-[hash].js"
+    },
+    performance: {
+      hints: false
     },
     watch: true,
     devtool: env.prod ? 'source-map' : 'cheap-module-eval-source-map',
-    devServer: {
-      host: '0.0.0.0',
-      contentBase: '../assets/bundles/',
-      watchContentBase: true,
-      
-      publicPath: '/assets/',
-      port: 9001,
-      compress: true,
-      hot: true,
-      open: true
-      
-    },
     module: {
       rules: [
         {
