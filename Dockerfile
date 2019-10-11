@@ -10,9 +10,6 @@ ENV PYTHONUNBUFFERED 1
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y nodejs
 
-# install yarn
-RUN npm install -g yarn
-
 RUN mkdir /app
 WORKDIR /app
 ADD requirements.txt /app/

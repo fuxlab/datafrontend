@@ -1,11 +1,8 @@
-cd /app/frontend
-yarn install
-yarn start &
-
-cd /app
+(cd /app/frontend && npm install)
+(cd /app/frontend && npm start) &
 
 # start background processing
-python manage.py process_tasks & 
+(cd /app && python manage.py process_tasks) & 
 
-# start serving
-python manage.py runserver 0.0.0.0:8000
+# start serving django app
+(cd /app && python manage.py runserver 0.0.0.0:8000)

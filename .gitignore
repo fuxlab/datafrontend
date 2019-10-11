@@ -1,4 +1,5 @@
 db/*
+dashboard/webpack-stats.json
 *.sqlite3
 *.pyc
 __pyc__
