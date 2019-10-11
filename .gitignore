@@ -7,4 +7,5 @@ __pycache__
 *.DS_Store
 *.sqlite3
 .env
-docker-compose-*.yml
+docker-compose-local.yml
+local.yml
