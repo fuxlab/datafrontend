@@ -9,10 +9,12 @@ from images.models import Image
 
 @background(schedule=0)
 def cleanup_annotation_boundingboxes(category_ids=[]):
+    '''
+    find all images with minimum two boundingboxes in same category
+    query can be improoved that iou-calculation is not needed:
+    add group_by: (x_min, x_max, y_min, y_max)
+    '''
     
-    # find all images with minimum two boundingboxes in same category
-    # query can be improoved that iou-calculation is not needed:
-    # add group_by: (x_min, x_max, y_min, y_max)
     if len(category_ids) == 0:
         bb_results = AnnotationBoundingbox.objects.values('image_id', 'category_id')\
             .annotate(

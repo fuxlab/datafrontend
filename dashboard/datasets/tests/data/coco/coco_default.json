@@ -1,0 +1,52 @@
+{
+    "info": {
+        "year": 2019,
+        "version": 1,
+        "description": "none",
+        "contributor": "nobody",
+        "url": "http://someurl.com",
+        "date_created": "Today"
+    },
+    "images": [
+        {
+            "id": 1,
+            "width": 100,
+            "height": 100,
+            "file_name": "test.jpg",
+            "license": 1,
+            "flickr_url": "flickr is dead",
+            "coco_url": "http://coco.url",
+            "date_captured": "someday"
+        }
+    ],
+    "annotations": [
+        {
+            "id": 2,
+            "image_id": 1,
+            "category_id": 3,
+            "segmentation": [],
+            "area": 12,
+            "bbox": [],
+            "iscrowd": 0,
+
+            "keypoints": [],
+            "num_keypoints": 0,
+
+            "caption": "some caption"
+        }
+    ],
+    "categories": [
+        {
+            "id": 3,
+            "name": "my category",
+            "supercategory": 0
+        }
+    ],
+    "licenses": [
+        {
+            "id": 1,
+            "name": "my license",
+            "url": "http://nypd.com"
+        }
+    ]
+}

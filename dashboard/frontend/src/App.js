@@ -14,7 +14,8 @@ import { Admin, Resource } from 'react-admin';
 import { ProjectList, ProjectEdit, ProjectCreate } from './models/projects';
 
 import { DatasetCreate } from './views/datasets/edit/create';
-import { DatasetList, DatasetEdit } from './models/datasets';
+import { DatasetEdit } from './views/datasets/edit/edit';
+import { DatasetList } from './views/datasets/edit/list';
 
 import { ImageList, ImageCreate } from './models/images';
 import { ImagesEdit } from './views/images/edit/edit';
@@ -68,6 +69,7 @@ const App = () => (
 
         <Resource name="projects" list={ProjectList} edit={ProjectEdit} create={ProjectCreate} icon={ShopTwoIcon} />
         <Resource name="datasets" list={DatasetList} edit={DatasetEdit} create={DatasetCreate} icon={LibraryBooksIcon} />
+        <Resource name="datasets/import_files" />
         <Resource name="categories" list={CategoryList} edit={CategoriesEdit} create={CategoryCreate} icon={CollectionsBookmarkIcon} />
         <Resource name="images/export" />
         <Resource name="images" list={ImageList} edit={ImagesEdit} create={ImageCreate} icon={PhotoLibraryIcon} />

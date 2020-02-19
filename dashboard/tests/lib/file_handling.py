@@ -13,6 +13,8 @@ def test_create_files(filenames):
 
 
 def test_delete_folders(folders=[]):
+    '''
+    '''
     for folder in folders:
         if(os.path.isdir(folder)):
             shutil.rmtree(folder)

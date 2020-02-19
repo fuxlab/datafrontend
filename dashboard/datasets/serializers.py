@@ -6,4 +6,4 @@ class DatasetSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Dataset
-        fields = ( 'id', 'project', 'identifier', 'name', 'images_count', )
+        fields = ( 'id', 'project', 'identifier', 'name', 'images_count', 'version', 'description', 'contributor', 'url', 'release_date')
