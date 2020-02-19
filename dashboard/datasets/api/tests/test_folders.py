@@ -7,7 +7,7 @@ from datasets.models import Dataset
 
 test_settings = override_settings(
     DATAFRONTEND = {
-        'DATA_PATH': 'datasets/tests/data'
+        'DATA_PATH': 'datasets/tests/data/tmp'
     }
 )
 
@@ -17,8 +17,8 @@ class TestApiFolders(TestCase):
         self.client = Client()
 
         test_create_files([
-            os.path.join('datasets/tests/data/folder1', 'file1.txt'),
-            os.path.join('datasets/tests/data/folder2', 'file1.txt')
+            os.path.join('datasets/tests/data/tmp/folder1', 'file1.txt'),
+            os.path.join('datasets/tests/data/tmp/folder2', 'file1.txt')
         ])
 
         self.project = Project.objects.create(name='Testproject 1')
@@ -26,7 +26,7 @@ class TestApiFolders(TestCase):
 
 
     def tearDown(self):
-        test_delete_folders(['datasets/tests/data/folder1', 'datasets/tests/data/folder2'])
+        test_delete_folders(['datasets/tests/data/tmp/folder1', 'datasets/tests/data/tmp/folder2'])
       
 
     @test_settings

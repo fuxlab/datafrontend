@@ -6,12 +6,20 @@ from django.utils.text import slugify
 class Dataset(models.Model):
   
     identifier = models.SlugField(null=True)
+    version = models.CharField(max_length=16, blank=True)
+
     name = models.CharField(max_length=255)
+    description = models.CharField(max_length=2048, blank=True)
+
+    contributor = models.CharField(max_length=2048, blank=True)
+    url = models.CharField(max_length=1042, blank=True)
+    release_date = models.CharField(max_length=255, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
 
     def __str__(self):
         return self.name
@@ -24,6 +32,11 @@ class Dataset(models.Model):
 
         super(Dataset, self).save(*args, **kwargs)
 
+    def path(self):
+        '''
+        path of dataset
+        '''
+        
 
     def images_count(self):
         '''

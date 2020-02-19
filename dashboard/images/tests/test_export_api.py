@@ -104,7 +104,7 @@ class TestImagesExportApi(TestCase):
         self.assertListEqual([exp_data1], response.data)
 
 
-    def test_images_export_segmentaion_with_category_filter(self):
+    def test_images_export_segmentation_with_category_filter(self):
         self.createAnnotations()
         
         query_string = urlencode({ 'filter' : {
@@ -124,3 +124,4 @@ class TestImagesExportApi(TestCase):
         
         self.assertEqual(response.status_code, 200)
         self.assertTrue(exp_data1 in response.data)
+

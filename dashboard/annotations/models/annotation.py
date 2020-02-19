@@ -5,7 +5,9 @@ from images.models import Image
 
 
 class Annotation(models.Model):
-  
+    
+    identifier = models.CharField(max_length=256, blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 
@@ -13,7 +15,7 @@ class Annotation(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
 
     def category_name(self):

@@ -2,7 +2,9 @@ import os
 from django.conf import settings
 
 class Folder():
-
+    '''
+    Virtual Model for Handling Folders of a Dataset
+    '''
 
     def all(path=None):
         '''

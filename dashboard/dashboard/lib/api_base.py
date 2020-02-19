@@ -1,8 +1,9 @@
 import json
+
+from rest_framework.views import APIView
 from rest_framework import viewsets
 
-class DashboardApiBase(viewsets.ModelViewSet):
-
+class ApiBase(APIView):
 
     def get_filter(self):
         '''
@@ -48,3 +49,16 @@ class DashboardApiBase(viewsets.ModelViewSet):
             return queryset[start:stop]
         
         return queryset
+
+
+
+class DashboardApiBase(viewsets.ModelViewSet):
+
+    def get_filter(self):
+        return ApiBase.get_filter(self)
+
+    def get_sort(self):
+        return ApiBase.get_sort(self)
+
+    def apply_range(self, queryset):
+        return ApiBase.apply_range(self, queryset)

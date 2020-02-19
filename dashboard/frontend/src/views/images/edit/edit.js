@@ -37,8 +37,10 @@ export const ImagesEdit = withStyles(ImagesEditStyles)(({ classes, ...props }) =
                     >
                         <SelectInput optionText="name" />
                     </ReferenceInput>
+                    <TextInput source="identifier" />
                     <TextInput source="name" />
                     <TextInput source="url" />
+                    <TextInput source="path" />
                 </FormTab>
                 
                 <FormTab label="annotations">

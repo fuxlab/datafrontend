@@ -3,7 +3,9 @@ from django.db import models
 from datasets.models import Dataset
 
 class Image(models.Model):
-  
+
+    identifier = models.CharField(max_length=256, blank=True, null=True)
+
     type_id = models.IntegerField(null=True)
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
 
@@ -18,7 +20,10 @@ class Image(models.Model):
     width = models.IntegerField(default=0, null=True)
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return str(self.id)
 
 
     def line(self):
@@ -27,7 +32,6 @@ class Image(models.Model):
         '''
         #if self.type is 'image':
         #return [ self.image(), 0, 0, self.uid, self.dataset_id ]
-        print(self)
         return [ self.id ]
 
     

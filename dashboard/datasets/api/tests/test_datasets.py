@@ -12,7 +12,7 @@ from background_task.models import Task
 
 test_settings = override_settings(
     DATAFRONTEND = {
-        'DATA_PATH': 'datasets/tests/data'
+        'DATA_PATH': 'datasets/tests/data/tmp'
     }
 )
 
@@ -26,7 +26,7 @@ class TestApiDatasets(TestCase):
         self.dataset_identifier = 'identifier'
         self.dataset = Dataset.objects.create(name=self.dataset_name, project=self.project)
         
-        self.new_created_folder = os.path.join('datasets/tests/data', self.dataset_identifier)
+        self.new_created_folder = os.path.join('datasets/tests/data/tmp', self.dataset_identifier)
         test_create_files([ os.path.join(self.new_created_folder, 'test.txt') ])
 
 
@@ -115,14 +115,14 @@ class TestApiDatasets(TestCase):
         self.assertEqual(response.data['name'], 'new dataset')
 
         # check for new created folder
-        expected_created_path = os.path.join('datasets/tests/data', response.data['identifier'])
+        expected_created_path = os.path.join('datasets/tests/data/tmp', response.data['identifier'])
         self.assertTrue(os.path.isdir(expected_created_path))
         
         # new folder is created, so no init
         tasks = Task.objects.all()
         self.assertEqual(len(tasks), 0)
 
-        test_delete_folders([ os.path.join('datasets/tests/data', 'new_folder') ])
+        test_delete_folders([ os.path.join('datasets/tests/data/tmp', 'new_folder') ])
 
 
     def test_show(self):

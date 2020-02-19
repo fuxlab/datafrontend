@@ -226,3 +226,4 @@ class TestImagesExportZip(TestCase):
         result_data = [content[0][0][0], content[1][0][0]]
         self.assertTrue(('%s.png' % (self.image.id)) in result_data)        # image1
         self.assertTrue(('%s.png' % (self.image2.id)) in result_data)       # image2
+
