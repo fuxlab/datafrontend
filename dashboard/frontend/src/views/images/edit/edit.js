@@ -3,6 +3,7 @@ import {
     ReferenceInput, SelectInput, Datagrid, Edit, SimpleForm, TabbedForm,
     FormTab, ReferenceManyField, TextInput, TextField, DisabledInput, EditButton
 } from 'react-admin';
+
 import { withStyles } from '@material-ui/core/styles';
 
 import ImagesEditDetail from './detail';
@@ -23,24 +24,35 @@ const ImagesEditStyles = {
     },
 };
 
+
+
+const ImagePreviewAside = ({ record }) => (
+    <div style={{ width: '50%', margin: '0 0 1em 1em' }}>
+        {record && (
+            <ImagesEditDetail record={record}/>
+        )}
+    </div>
+);    
+
 export const ImagesEdit = withStyles(ImagesEditStyles)(({ classes, ...props }) => {
     return(
-        <Edit {...props}>
+        <Edit aside={<ImagePreviewAside />} {...props}>
+            
             <TabbedForm>
                 <FormTab label="summary">
-                    <ImagesEditDetail />
                     
-                    <DisabledInput source="id" />
+                    <DisabledInput source="id" fullWidth />
                     <ReferenceInput
                         source="dataset"
                         reference="datasets"
+                        fullWidth
                     >
                         <SelectInput optionText="name" />
                     </ReferenceInput>
-                    <TextInput source="identifier" />
-                    <TextInput source="name" />
-                    <TextInput source="url" />
-                    <TextInput source="path" />
+                    <TextInput source="identifier" fullWidth />
+                    <TextInput source="name" fullWidth />
+                    <TextInput source="url" fullWidth />
+                    <TextInput source="path" fullWidth />
                 </FormTab>
                 
                 <FormTab label="annotations">
@@ -86,9 +98,7 @@ export const ImagesEdit = withStyles(ImagesEditStyles)(({ classes, ...props }) =
                         addLabel={true}
                         className={classes.annotationSegmentationList}
                     >
-                        <Datagrid
-                            expand={<ImagesEditListPreview type="segmentation"/>}
-                        >
+                        <Datagrid>
                             <TextField source="id" />
                             <TextField source="category_name" />
                             <TextField source="width" />

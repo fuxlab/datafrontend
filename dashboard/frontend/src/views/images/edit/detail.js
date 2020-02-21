@@ -10,19 +10,27 @@ import CropFreeIcon from '@material-ui/icons/CropFree';
 import LayersIcon from '@material-ui/icons/Layers';
 
 import { withStyles } from '@material-ui/core/styles';
+import { SvgLoader, SvgProxy } from 'react-svgmt';
+
 
 const styles = {
     card: {
-        marginTop: '1em',
-        marginBottom: '1em',
+        marginTop: 0,
+        marginBottom: 0,
         boxShadow: 'none',
         border: '1px solid #000',
     },
     media: {
-        height: '18em',
-        backgroundSize: 'contain',
+        height: 'auto',
+        backgroundSize: 'auto',
         backgroundColor: '#000',
-        padding: '1em',
+        padding: 0,
+        margin: 0,
+        textAlign: 'center'
+    },
+    media_object: {
+        margin: 0,
+        padding: 0
     },
 };
 
@@ -31,38 +39,52 @@ class ImagesEditDetail extends Component {
 
     state = {
         error: false,
-        imageSize: 'original'
+        segmentation_status: 'visable',
+        boundingbox_status: 'visable',
     };
 
-    displayOriginal = () => {
-        this.setState({ imageSize: 'original' });
+    toggleBoundingbox = () => {
+        //console.log(this.svg_image);
+        if(this.state.boundingbox_status == 'visable'){
+            this.setState({ boundingbox_status: 'hidden' });
+        } else {
+            this.setState({ boundingbox_status: 'visable' });
+        }
     };
 
-    displayBoundingbox = () => {
-        this.setState({ imageSize: 'boundingbox' });
+    toggleSegmentation = () => {
+        //console.log(this.svg_image);
+        if(this.state.segmentation_status == 'visable'){
+            this.setState({ segmentation_status: 'hidden' });
+        } else {
+            this.setState({ segmentation_status: 'visable' });
+        }
     };
 
-    displaySegmentation = () => {
-        this.setState({ imageSize: 'segmentation' });
+    svgClickSegmentation = (element) => {
+        console.log(element.target.id);
     };
 
     render() {
-        const { classes, record } = this.props;
-        const { imageSize } = this.state;
-        const imageUrl = record.preview + '?type=' + imageSize
+        const record = this.props.record;
+        const classes = styles;
+        const { boundingbox_status, segmentation_status } = this.state;
+        const imageUrl = record.preview;
+        const overlayUrl = '/api/image/preview/' + record.id + '.svg';
+
         return(
-            <Card className={classes.card}>
-                <CardMedia image={imageUrl} className={classes.media} />
+            <Card style={classes.card}>
+                <CardMedia image={imageUrl} style={classes.media}>
+                    <SvgLoader path={overlayUrl} ref={elem => this.svg_image = elem}>
+                        <SvgProxy selector=".segmentation_layer" onClick={this.svgClickSegmentation} visibility={segmentation_status} />
+                    </SvgLoader>
+                </CardMedia>
                 <CardActions style={{ justifyContent: 'flex-end' }}>
-                    <Button onClick={this.displayOriginal}>
-                        <RestoreIcon style={{ paddingRight: '0.5em' }} />
-                        Original
-                    </Button>
-                    <Button onClick={this.displayBoundingbox}>
+                    <Button onClick={this.toggleBoundingbox}>
                         <CropFreeIcon style={{ paddingRight: '0.5em' }} />
                         BoundingBoxes
                     </Button>
-                    <Button onClick={this.displaySegmentation}>
+                    <Button onClick={this.toggleSegmentation}>
                         <LayersIcon style={{ paddingRight: '0.5em' }} />
                         Segmentations
                     </Button>

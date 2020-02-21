@@ -5,7 +5,8 @@
   "dependencies": {
     "react": "^16.8.6",
     "react-admin": "^2.9.2",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "react-svgmt": "^1.1.11"
   },
   "scripts": {
     "start": "webpack -p --progress --color",
@@ -30,17 +31,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/preset-env": "^7.4.5",
     "@babel/preset-react": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.4.4",
     "babel-loader": "^8.0.6",
-    "copy-webpack-plugin": "^5.0.3",
+    "copy-webpack-plugin": "^5.1.1",
     "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "file-loader": "^4.0.0",
     "html-loader": "^0.5.5",
     "prop-types": "^15.7.2",
     "ra-data-json-server": "^2.9.2",
-    "react-scripts": "3.0.1",
+    "react-scripts": "^3.4.0",
     "typescript": "^3.5.1",
     "webpack": "4.29.6",
     "webpack-bundle-tracker": "^0.4.2-beta",
