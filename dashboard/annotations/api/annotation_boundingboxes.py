@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.db.models import Q
 
 from dashboard.lib.api_base import DashboardApiBase
-from annotations.models import AnnotationBoundingbox
+from annotations.models import Annotation
 from annotations.serializers import AnnotationBoundingboxSerializer
 
 
@@ -22,4 +22,4 @@ class AnnotationBoundingboxViewSet(DashboardApiBase):
         if 'image' in filter_params:
             qs.add(Q(image=filter_params['image']), Q.AND)
 
-        return AnnotationBoundingbox.objects.filter(qs).distinct().order_by(self.get_sort())
+        return Annotation.boundingbox_objects.filter(qs).distinct().order_by(self.get_sort())

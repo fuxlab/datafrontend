@@ -4,7 +4,6 @@ from projects.models import Project
 
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
 
 
 class TestModelsDataset(TestCase):

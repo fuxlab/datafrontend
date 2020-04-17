@@ -6,91 +6,68 @@ class ExportSerializer(serializers.ModelSerializer):
 
     id = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
+    source = serializers.SerializerMethodField()
+
+    annotation_image = serializers.SerializerMethodField()
     image = serializers.SerializerMethodField()
-    category = serializers.SerializerMethodField()
+
 
     def __init__(self, *args, **kwargs):
         '''
-        super init and accept filter_params
+        super init and accept export_params
         '''
-        self.filter_params = kwargs.get('filter_params', {} )
-        kwargs.pop('filter_params', None)
+        self.export_params = kwargs.get('export_params', {} )
+        kwargs.pop('export_params', None)
         super(ExportSerializer, self).__init__(*args, **kwargs)
-
-
-    def get_url(self, obj):
-        '''
-        return path of relevant image
-        '''
-        if 'category' in self.filter_params:
-            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
-                return '/api/image/boundingbox_%s.png' % (obj['annotationboundingbox__id'])
-            elif 'annotationsegmentation__id' in obj and obj['annotationsegmentation__id'] is not None:
-                return '/api/image/segmentation_%s.png' % (obj['annotationsegmentation__id'])
-            else:
-                return '/api/image/%s.png' % (obj['id'])
-
-        return '/api/image/%s.png' % (obj['id'])
 
 
     def get_id(self, obj):
         '''
-        get an unique id to display. due to we have multiple models, and potentially overlapping ids
-        we need to calculate a new unique one
         '''
-        id_parts = [ str(obj['id']) ]
-        if 'category' in self.filter_params:
-            if 'annotation__id' in obj and obj['annotation__id'] is not None:
-                id_parts.append(str(obj['annotation__id']))
-            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
-                id_parts.append(str(obj['annotationboundingbox__id']))
-            if 'annotationsegmentation__id' in obj and obj['annotationsegmentation__id'] is not None:
-                id_parts.append(str(obj['annotationsegmentation__id']))
-
-        return str('-'.join(id_parts))
+        return obj.id
 
 
     def get_type(self, obj):
         '''
-        get type of record by filter_params and returning record data
+        get type of record by export_params
         '''
-        if 'category' in self.filter_params:
-            if 'annotationboundingbox__id' in obj and obj['annotationboundingbox__id'] is not None:
-                return 'boundingbox'
-            elif 'annotationsegmentation__id' in obj and  obj['annotationsegmentation__id'] is not None:
-                return 'segmentation'
-            else:
-                return 'annotation'
+        if 'type' in self.export_params:
+            return self.export_params['type']
         
-        return 'image'
+        return 'all'
 
 
-    def get_image(self, obj):
+    def get_annotation_image(self, obj):
         '''
-        get original image source path
+        get preview image source path
         '''
-        return '/api/image/%s.png' % (obj['id'])
+        if 'type' in self.export_params and self.export_params['type'] not in [ 'annotation' ]:
+            return '/api/image/%s_%s.png' % (self.export_params['type'], obj.id)
+        return '/api/image/%s.png' % (obj.id)
 
 
-    def get_category(self, obj):
+    def get_image(selg, obj):
+        '''
+        '''
+        return obj.image.image()
+
+
+    def get_source(self, obj):
         '''
         get class for type
         '''
-        if 'category' in self.filter_params:
-            if 'annotation__category_id' in obj and obj['annotation__category_id'] is not None:
-                return obj['annotation__category_id']
-            if 'annotationboundingbox__category_id' in obj and obj['annotationboundingbox__category_id'] is not None:
-                return obj['annotationboundingbox__category_id']
-            if 'annotationsegmentation__category_id' in obj and obj['annotationsegmentation__category_id'] is not None:
-                return obj['annotationsegmentation__category_id']
-        elif 'dataset_id' in obj and obj['dataset_id'] is not None:                
-            return obj['dataset_id']
-        return 0
+        sstr = []
+        if 'category' in self.export_params:
+            sstr.append(obj.category.name)
+        if 'dataset' in self.export_params:
+            sstr.append(obj.image.dataset.name)
+        return ' '.join(sstr) 
+
         
     class Meta:
         '''
         data returned with json-api
         '''
         model = Image
-        fields = [ 'id', 'type', 'url', 'image', 'category' ]
+        fields = [ 'id', 'type', 'annotation_image', 'image', 'source' ] #, 'url'
+

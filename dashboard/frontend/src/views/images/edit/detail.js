@@ -65,6 +65,10 @@ class ImagesEditDetail extends Component {
         console.log(element.target.id);
     };
 
+    svgClickBoundingbox = (element) => {
+        console.log(element.target.id);
+    };
+
     render() {
         const record = this.props.record;
         const classes = styles;
@@ -77,6 +81,7 @@ class ImagesEditDetail extends Component {
                 <CardMedia image={imageUrl} style={classes.media}>
                     <SvgLoader path={overlayUrl} ref={elem => this.svg_image = elem}>
                         <SvgProxy selector=".segmentation_layer" onClick={this.svgClickSegmentation} visibility={segmentation_status} />
+                        <SvgProxy selector=".boundingbox_layer" onClick={this.svgClickBoundingbox} visibility={boundingbox_status} />
                     </SvgLoader>
                 </CardMedia>
                 <CardActions style={{ justifyContent: 'flex-end' }}>

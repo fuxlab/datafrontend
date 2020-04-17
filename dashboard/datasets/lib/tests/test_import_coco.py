@@ -1,4 +1,4 @@
-import os
+import os, copy
 
 from django.test import TestCase, override_settings, Client
 
@@ -8,7 +8,7 @@ from projects.models import Project
 from datasets.models import Dataset
 from images.models import Image
 from categories.models import Category
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation
 
 class TestApiDatasets(TestCase):
 
@@ -41,6 +41,11 @@ class TestApiDatasets(TestCase):
         subject = ImportCoco(self.dataset)
         result = subject.read_file(os.path.join('datasets/tests/data/coco', 'coco_default.json'))
         self.assertTrue(result)
+        
+        self.assertEqual(len(subject.data['images']), 2)
+        self.assertEqual(len(subject.data['annotations']), 1)
+        self.assertEqual(len(subject.data['categories']), 1)
+        self.assertEqual(len(subject.data['licenses']), 1)
 
 
     def test_read_json_missing(self):
@@ -59,7 +64,6 @@ class TestApiDatasets(TestCase):
         result = subject.convert(test_json_data)
 
         self.assertEqual(list(result.keys()).sort(), ['info', 'images', 'annotations', 'categories', 'licenses'].sort())
-        self.assertEqual(result['info'], test_json_data['info'])
         
         self.assertEqual(list(result['images'].keys()), [ 1 ])
         self.assertEqual(list(result['annotations'].keys()), [ 2 ])
@@ -108,8 +112,6 @@ class TestApiDatasets(TestCase):
             'annotations_all': 2,
             'categories': 1,
             'categories_all': 2,
-            'info': 0,
-            'info_all': 1,
             'licenses': 1,
             'licenses_all': 2
         })
@@ -174,7 +176,7 @@ class TestApiDatasets(TestCase):
         subject.data = subject.convert(import_data)
         subject.save()
 
-        result_anno = Annotation.objects.all()[0]
+        result_anno = Annotation.objects.all()[1]
         self.assertEqual(result_anno.identifier, '1000')
         self.assertEqual(result_anno.category.identifier, '3')
         self.assertEqual(result_anno.image.identifier, '1')
@@ -197,7 +199,7 @@ class TestApiDatasets(TestCase):
         subject.data = subject.convert(import_data)
         subject.save()
 
-        result_anno_bbox = AnnotationBoundingbox.objects.all()[0]
+        result_anno_bbox = Annotation.boundingbox_objects.all()[0]
         self.assertEqual(result_anno_bbox.identifier, '1001')
         self.assertEqual(result_anno_bbox.category.identifier, '3')
         self.assertEqual(result_anno_bbox.image.identifier, '1')
@@ -212,26 +214,51 @@ class TestApiDatasets(TestCase):
         '''
         test correct bbox conversion
         '''
-        import copy
         subject = ImportCoco(self.dataset)
         
         # add boundingbox [x,y,width,height]
         import_data = copy.deepcopy(self.correct_json_data)
         import_data['annotations'].append({
             'id': 1002, 'image_id': 1, 'category_id': 3,
-            'segmentation': ['a', 'b', 'c'],
+            'segmentation': [[10,10,20,10,20,20,10,20]],
             'mask': 'somestring',
             'iscrowd': True
         })
         subject.data = subject.convert(import_data)
         subject.save()
 
-        result_anno_seg = AnnotationSegmentation.objects.all()[0]
+        result_anno_seg = Annotation.segmentation_objects.all()[0]
         self.assertEqual(result_anno_seg.identifier, '1002')
         self.assertEqual(result_anno_seg.category.identifier, '3')
         self.assertEqual(result_anno_seg.image.identifier, '1')
-        self.assertEqual(result_anno_seg.segmentation, ['a', 'b', 'c'])
+        self.assertEqual(result_anno_seg.segmentation, [[10,10,20,10,20,20,10,20]])
         self.assertEqual(result_anno_seg.mask, 'somestring')
 
 
         self.assertEqual(result_anno_seg.is_crowd, True)
+
+
+    def xtest_read_real_json(self):
+        '''
+        references one one file of coco2017 to see if big imports cause any troule
+        if they do, try to increase memory max setting in docker first!
+        '''
+        import time
+
+        subject = ImportCoco(self.dataset)
+        
+        start_time = time.time()
+        subject.read_file(os.path.join('/data/coco2017', 'instances_train2017.json'))
+        print("--- %s seconds for read_file ---" % (time.time() - start_time))
+        
+        start_time = time.time()
+        print(subject.stats())
+        print("--- %s seconds for stats ---" % (time.time() - start_time))
+        
+        start_time = time.time()
+        subject.save()
+        print("--- %s seconds for save ---" % (time.time() - start_time))
+
+        print(Annotation.objects.count())
+        print(Annotation.boundingbox_objects.count())
+        print(Annotation.segmentation_objects.count())

@@ -44,8 +44,8 @@ export const ExportList = withStyles(ExportListStyles)(({ classes, ...props }) =
                     sortable={false}
                 />
                 <TextField
-                    source="url"
-                    label="URL"
+                    source="source"
+                    label="Source"
                     sortable={false}
                 />
             </Datagrid>

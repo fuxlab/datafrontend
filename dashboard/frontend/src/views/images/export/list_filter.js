@@ -156,7 +156,7 @@ const ImagesExportListFilter = withStyles(ImagesExportListFilterStyles)(({ class
                 variant="contained"
                 disabled={props.total === 0}
                 component={Link}
-                href={ '/api/images/export.zip?' + stringify({
+                href={ '/api/images/export/download?' + stringify({
                         filter: JSON.stringify(props.filterValues),
                     })}
                 label="Export"

@@ -41,7 +41,6 @@ class ImportFilesView(ApiBase):
 
 
     def post(self, request):
-        print(request.POST)
         dataset = False
         if 'dataset' in request.POST:
             dataset = Dataset.objects.get(pk=int(request.POST['dataset']))

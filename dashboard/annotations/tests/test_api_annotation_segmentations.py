@@ -7,7 +7,7 @@ from projects.models import Project
 from datasets.models import Dataset
 from categories.models import Category
 from images.models import Image
-from annotations.models import AnnotationSegmentation
+from annotations.models import Annotation
 
 class TestApiAnnotationSegmentations(TestCase):
 
@@ -18,12 +18,12 @@ class TestApiAnnotationSegmentations(TestCase):
         self.dataset = Dataset.objects.create(name='Test 1', project=self.project)
         self.category = Category.objects.create(name='Test Category 1', project=self.project)
         self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
-        self.segmentation = AnnotationSegmentation.objects.create(
+        self.segmentation = Annotation.objects.create(
             image=self.image,
             category=self.category,
             width=800,
             height=600,
-            mask='emptymask'
+            segmentation=[[10,10,20,10,20,20,10,20]]
         )
 
 
@@ -44,7 +44,7 @@ class TestApiAnnotationSegmentations(TestCase):
             'category': self.category.id,
             'width': 800,
             'height': 600,
-            'mask': 'emptymask'
+            'segmentation': [[10,10,20,10,20,20,10,20]]
         })
 
         self.assertEqual(response.status_code, 201)
@@ -64,9 +64,7 @@ class TestApiAnnotationSegmentations(TestCase):
         response1 = self.client.post('/api/annotation-segmentations/', {
             'image': self.image.id,
             'category': self.category.id,
-            'width': 800,
-            'height': 600,
-            'mask': 'emptymask'
+            'segmentation': [[10,10,20,10,20,20,10,20]]
         })
         created_id = response1.data['id']
         self.assertEqual(response1.status_code, 201)
@@ -76,7 +74,7 @@ class TestApiAnnotationSegmentations(TestCase):
             'category': self.category.id,
             'width': 1000,
             'height': 2000,
-            'mask': 'emptymask'
+            'segmentation': [[10,10,20,10,20,20,10,20]]
         }
         content = encode_multipart('BoUnDaRyStRiNg', new_data)
         content_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
@@ -87,8 +85,8 @@ class TestApiAnnotationSegmentations(TestCase):
         response3 = self.client.get('/api/annotation-segmentations/' + str(created_id) + '/')    
 
         self.assertEqual(response3.status_code, 200)
-        self.assertEqual(response3.data['width'], new_data['width'])
-        self.assertEqual(response3.data['height'], new_data['height'])
+        self.assertEqual(response3.data['width'], 10)
+        self.assertEqual(response3.data['height'], 10)
 
 
     def test_delete(self):

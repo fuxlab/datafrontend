@@ -13,7 +13,7 @@ class ApiBase(APIView):
         if filter_params_str is not None:
             return json.loads(filter_params_str.replace("\'", "\""))
         
-        return []
+        return {}
 
 
     def get_sort(self):

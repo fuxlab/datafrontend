@@ -29,18 +29,18 @@ const ImagesExportListPreviewStyles = {
 
 const ImagesExportListPreview = withStyles(ImagesExportListPreviewStyles)(({ classes, ...props }) => {
     var image_type = props.record.type;
-    var image_url = props.record.url;
+    var annotation_image = props.record.annotation_image;
     var image_image = props.record.image;
     return(
         <table className={classes.table}>
             <tr className={classes.tableColumn}>
                 <td className={classes.tableRow}>
-                    <img className={classes.image} src={image_url} /><br/>
-                    <span className={classes.txt}>{image_type}-Image</span>
+                    <img className={classes.image} src={annotation_image} /><br/>
+                    <span className={classes.txt}>{image_type} Annotation</span>
                 </td>
                 <td className={classes.tableRow}>
                     <img className={classes.image} src={image_image} /><br/>
-                    <span className={classes.txt}>Original-Image</span>
+                    <span className={classes.txt}>Original Image</span>
                 </td>
             </tr>
         </table>

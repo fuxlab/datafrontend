@@ -8,10 +8,10 @@ from projects.models import Project
 
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation, Annotation, Annotation
 
 
-class TestModelCategories(TestCase):
+class TestCategoryModel(TestCase):
 
 
     def setUp(self):
@@ -33,15 +33,15 @@ class TestModelCategories(TestCase):
         image2 = Image.objects.create(url='1234562', dataset=self.dataset2)
 
         Annotation.objects.create(category=self.category, image=image)
-        Annotation.objects.create(category=self.category2, image=image)
+        Annotation.objects.create(category=self.category2, image=image2)
 
-        AnnotationBoundingbox.objects.create(category=self.category, image=image)
-        AnnotationBoundingbox.objects.create(category=self.category2, image=image)
+        Annotation.objects.create(category=self.category, image=image, x_min=10, y_min=10, x_max=20, y_max=20)
+        Annotation.objects.create(category=self.category2, image=image2, x_min=10, y_min=10, x_max=20, y_max=20)
 
-        AnnotationSegmentation.objects.create(category=self.category, image=image)
-        AnnotationSegmentation.objects.create(category=self.category2, image=image)
+        Annotation.objects.create(category=self.category, image=image, segmentation=[[10,10,10,20,20,20,20,10]])
+        Annotation.objects.create(category=self.category2, image=image2, segmentation=[[10,10,10,20,20,20,20,10]])
 
         self.assertEqual(self.category.images_count(), 1)
-        self.assertEqual(self.category.annotations_count(), 1)
-        self.assertEqual(self.category.boundingboxes_count(), 1)
+        self.assertEqual(self.category.annotations_count(), 3)
+        self.assertEqual(self.category.boundingboxes_count(), 2)
         self.assertEqual(self.category.segmentations_count(), 1)

@@ -19,6 +19,7 @@ class Image(models.Model):
     height = models.IntegerField(default=0, null=True)
     width = models.IntegerField(default=0, null=True)
 
+
     def __str__(self):
         if self.name:
             return self.name
@@ -60,13 +61,14 @@ class Image(models.Model):
         
         types = []
         
-        for annotation in self.annotationboundingbox_set.all():
+        for annotation in self.annotation_set.exclude(x_min__isnull=True).all():
             types.append('[ BB ' + str(annotation.category.name)+ ' ]')
         
-        for annotation in self.annotationsegmentation_set.all():
+        for annotation in self.annotation_set.exclude(segmentation__isnull=True).all():
             types.append('[ SG ' + str(annotation.category.name)+ ' ]')
         
         for annotation in self.annotation_set.all():
             types.append('[ AN ' + str(annotation.category.name)+ ' ]')
 
         return ' '.join(types)
+

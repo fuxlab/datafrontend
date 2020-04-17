@@ -2,8 +2,7 @@ from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
 
-from .export import ImageExport
-from .api import ImageViewSet
+from .api import ImageViewSet, ImageExport
 
 from images.renderers import PNGRenderer, JPGImageRenderer, ImageRenderer
 
@@ -12,8 +11,8 @@ router = routers.DefaultRouter()
 router.register('images', ImageViewSet, basename='images')
 
 urlpatterns = [
+    path('images/export/download', ImageExport.as_view({'get': 'download'})),
     path('images/export/', ImageExport.as_view({'get': 'list'})),
-    path('images/export.zip', ImageExport.as_view({'get': 'download'})),
     
     url("^", include(router.urls)),
     # png images
