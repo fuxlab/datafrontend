@@ -7,7 +7,7 @@ from categories.models import Category
 from projects.models import Project
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation
 
 class TestApiCategories(TestCase):
 
@@ -20,7 +20,7 @@ class TestApiCategories(TestCase):
 
     def create_multi(self):
         self.project2 = Project.objects.create(name='Testproject 2')
-        self.category2 = Category.objects.create(name=self.category_name + ' 2', project=self.project)
+        self.category2 = Category.objects.create(name=self.category_name + ' 2', project=self.project2)
         self.category3 = Category.objects.create(name=self.category_name + ' 3', project=self.project2)
         self.category4 = Category.objects.create(name=self.category_name + ' 4', project=self.project2)
 
@@ -38,13 +38,13 @@ class TestApiCategories(TestCase):
         response = self.client.get('/api/categories/?' + query_string)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual([e['id'] for e in response.data], [self.category.id, self.category2.id])
+        self.assertEqual([e['id'] for e in response.data], [self.category.id])
 
 
     def test_index_filter_annotation_exists(self):
         self.create_multi()
         
-        dataset = Dataset.objects.create(name='name1', project=self.project)
+        dataset = Dataset.objects.create(name='name1', project=self.project2)
         image = Image.objects.create(name='name1', url='url1', dataset=dataset)
         Annotation.objects.create(category=self.category2, image=image)
 
@@ -58,9 +58,9 @@ class TestApiCategories(TestCase):
     def test_index_filter_annotation_boundingbox_exists(self):
         self.create_multi()
         
-        dataset = Dataset.objects.create(name='name1', project=self.project)
+        dataset = Dataset.objects.create(name='name1', project=self.project2)
         image = Image.objects.create(name='name1', url='url1', dataset=dataset)
-        AnnotationBoundingbox.objects.create(category=self.category3, image=image)
+        Annotation.objects.create(category=self.category3, image=image, x_min=10, y_min=10, x_max=20, y_max=20)
 
         query_string = urlencode({ 'filter' : {'boundingbox_exists': 'true'} })
         response = self.client.get('/api/categories/?' + query_string)
@@ -72,9 +72,9 @@ class TestApiCategories(TestCase):
     def test_index_filter_annotation_segmentation_exists(self):
         self.create_multi()
         
-        dataset = Dataset.objects.create(name='name1', project=self.project)
+        dataset = Dataset.objects.create(name='name1', project=self.project2)
         image = Image.objects.create(name='name1', url='url1', dataset=dataset)
-        AnnotationSegmentation.objects.create(category=self.category4, image=image)
+        Annotation.objects.create(category=self.category4, image=image, segmentation=[[10,10,10,20,20,20,20,10]])
 
         query_string = urlencode({ 'filter' : {'segmentation_exists': 'true'} })
         response = self.client.get('/api/categories/?' + query_string)

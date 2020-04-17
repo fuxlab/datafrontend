@@ -6,7 +6,7 @@ from projects.models import Project
 from categories.models import Category
 from datasets.models import Dataset
 from images.models import Image
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation
 
 from tools.models import Conflict
 from tools.tasks.conflicts import create_annotation_boundingbox_conflicts
@@ -27,17 +27,17 @@ class TestToolsTasksConflicts(TestCase):
         image3 = Image.objects.create(name='Name', url='http://images.com/img3.jpg', dataset=self.dataset, height=300, width=300)
 
         # overlap 1.0
-        bb11 = AnnotationBoundingbox.objects.create(image=image1, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
-        bb12 = AnnotationBoundingbox.objects.create(image=image1, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
+        bb11 = Annotation.objects.create(image=image1, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
+        bb12 = Annotation.objects.create(image=image1, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
        
         # overlap 1.0, 0.82, 0.82
-        bb21 = AnnotationBoundingbox.objects.create(image=image2, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
-        bb22 = AnnotationBoundingbox.objects.create(image=image2, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
-        bb23 = AnnotationBoundingbox.objects.create(image=image2, category=self.category, x_min=110, x_max=210, y_min=100, y_max=200)
+        bb21 = Annotation.objects.create(image=image2, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
+        bb22 = Annotation.objects.create(image=image2, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
+        bb23 = Annotation.objects.create(image=image2, category=self.category, x_min=110, x_max=210, y_min=100, y_max=200)
         
         # overlap 0
-        bb31  = AnnotationBoundingbox.objects.create(image=image3, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
-        bb32  = AnnotationBoundingbox.objects.create(image=image3, category=self.category, x_min=200, x_max=300, y_min=200, y_max=300)
+        bb31  = Annotation.objects.create(image=image3, category=self.category, x_min=100, x_max=200, y_min=100, y_max=200)
+        bb32  = Annotation.objects.create(image=image3, category=self.category, x_min=200, x_max=300, y_min=200, y_max=300)
 
         create_annotation_boundingbox_conflicts.now(threshold=0.8)
         

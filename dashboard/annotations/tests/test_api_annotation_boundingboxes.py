@@ -7,7 +7,7 @@ from projects.models import Project
 from datasets.models import Dataset
 from categories.models import Category
 from images.models import Image
-from annotations.models import AnnotationBoundingbox
+from annotations.models import Annotation
 
 class TestApiAnnotationBoundingboxes(TestCase):
 
@@ -18,7 +18,7 @@ class TestApiAnnotationBoundingboxes(TestCase):
         self.dataset = Dataset.objects.create(name='Test 1', project=self.project)
         self.category = Category.objects.create(name='Test Category 1', project=self.project)
         self.image = Image.objects.create(name='Name', url='http://images.com/img1.jpg', dataset=self.dataset)
-        self.boundingbox = AnnotationBoundingbox.objects.create(
+        self.boundingbox = Annotation.objects.create(
             image=self.image,
             category=self.category,
             x_min=100.0,

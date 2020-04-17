@@ -3,12 +3,12 @@ import itertools
 from background_task import background
 from django.db.models import Count
 
-from annotations.models import Annotation, AnnotationBoundingbox, AnnotationSegmentation
+from annotations.models import Annotation #, AnnotationBoundingbox, AnnotationSegmentation
 from images.models import Image
 
 
 @background(schedule=0)
-def cleanup_annotation_boundingboxes(category_ids=[]):
+def cleanup_annotations(category_ids=[]):
     '''
     find all images with minimum two boundingboxes in same category
     query can be improoved that iou-calculation is not needed:
